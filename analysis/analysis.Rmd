@@ -1,0 +1,204 @@
+---
+title: "Moon Days Data Analysis"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(lubridate)
+```
+
+I've taken the Maha Nikaya icalendar and for each event written the date and
+event summary to a CSV file. 
+
+## Import the CSV
+```{r import-csv }
+events <- read_csv("events.csv", col_names = c("summary_text", "date"))
+```
+
+## Examine the data
+
+To start with, let's see what the raw data looks like.
+```{r examine }
+events %>% head(10)
+```
+
+## What is the range of dates?
+```{r date-range }
+date_range <- events %>% 
+  summarise(
+    start = min(date),
+    end = max(date)
+  )
+```
+
+The event list covers the dates from `r date_range$start` to `r date_range$end`.
+
+## What are the distinct types of event
+
+```{r event-types }
+events %>% count(summary_text, sort = TRUE)
+```
+
+There are the waxing & waning 1/2 moon days, holidays, rains retreat dates and the uposathas which include:
+
+- Full/New
+- 14/15 day
+- Season in Pali
+- Week in season & number of weeks in season.
+
+Some parsing of the summaries will be in order.
+
+## Multiple summaries on same date
+
+In some cases there are more than one event. What does that look like?
+```{r multiple summaries }
+multiple_summaries <- events %>% 
+  group_by(date) %>%
+  summarise(
+    n = n()
+  ) %>%
+  filter(n > 1)
+
+multi_events <- events %>% 
+  semi_join(multiple_summaries, by = "date")
+
+multi_events %>%
+  mutate(date = stamp("1 Jan 2022", quiet = TRUE)(date)) %>%
+  select(date, summary_text) %>%
+  head(15) %>%
+  knitr::kable(col.names = c("Date", "Summary Text"))
+```
+### Intepretation
+
+It looks like there dates with 2 summaries where the uposatha is also a
+special day. There are some with 3 summaries.
+
+## Dates with 3 summaries
+```{r 3 summaries}
+multiple_summaries <- events %>% 
+  group_by(date) %>%
+  summarise(
+    n = n()
+  ) %>%
+  filter(n == 3)
+
+three_summary_events <- events %>% 
+  semi_join(multiple_summaries, by = "date")
+
+three_summary_events %>%
+  mutate(date = format(date, "%d %h %Y")) %>%
+  select(date, summary_text) %>%
+  knitr::kable(col.names = c("Date", "Summary Text"))
+```
+### Interpretation
+
+Here we have three bits of information - the uposatha, the pavarana and the
+fact that it is the last day of the vassa. 
+
+To build our python module, we can make some assumptions about the structure of
+the data, in particular the use of the summary field. It has been used in a
+very consistent way.
+
+## Waxing & waning moons
+
+Are these events always by themselves?
+```{r waxing-waning }
+waning_waxing <- events %>%
+  filter(summary_text %in% c("Waxing Moon", "Waning Moon"))
+
+events %>% 
+  semi_join(waning_waxing, by = "date") %>%
+  group_by(date) %>%
+  summarise(
+    n = n()
+  ) %>%
+  filter(n > 1)
+```
+Yes, that's right.
+
+## Special days
+
+Do special days always fall on an uposatha?
+```{r ordinary}
+ordinary <- events %>%
+  filter(str_detect(summary_text, "Moon"))
+
+ordinary %>% count(summary_text)
+```
+### Get the special days
+```{r special}
+special <- events %>%
+  anti_join(ordinary, by = "summary_text") %>%
+  filter(!(str_detect(summary_text, "Vassa")))
+
+special %>% count(summary_text)
+```
+### What events are concurent with the special days?
+```{r concurent-with-special }
+concurent_with_special <- events %>% 
+  semi_join(special, by = "date") %>%
+  filter(!str_detect(summary_text, "Vassa"))
+
+concurent_with_special %>% count(summary_text)
+```
+### Interpretation
+
+All special days fall on the full moon day.
+
+## Rains beginning and end days
+```{r vassa-days }
+vassa_days <- events %>% filter(str_detect(summary_text, "Vassa"))
+
+same_day_as_vassa_days <- events %>% semi_join(vassa_days, by = "date")
+
+same_day_as_vassa_days %>% count(summary_text)
+```
+So the end of rains includes three events. Let's just check that the first day
+of vassa stands alone, is not accompanied by a moon day or special day.
+```{r first-day-of-vassa}
+first_day_of_vassa <- events %>% filter(summary_text == "First day of Vassa")
+same_as_first_day_of_vassa <- events %>% semi_join(first_day_of_vassa, by = "date")
+
+same_as_first_day_of_vassa %>% count(summary_text)
+```
+
+It appears that the last day of the vassa is not a moon day or a special day.
+
+## What assumptions can we make?
+
+**Events occurring by themselves**
+
+- Waxing moon
+- Waning moon
+- New moon
+- Full moon
+- First day of vassa
+
+**More than one event on same date**
+
+- Full moon + special day
+- Full mooon + special day (pavarana) + last day of vassa
+
+## Are dates sequential?
+
+If they are, we can keep an event object and add the special/vassa days to it
+as we walk through the icalendar. As long as the date is the same we just add
+it to the most recent event. If the dates are not sequential, we need to check whether we already
+have an event at that date before adding the extra information. Also, if we want to add extra 
+information to a waxing/waning moon event (season, week in season) we (might?) need to 
+search the list of events to find the previous date. Starting with a sequential 
+list we can just keep track of the previous event.
+
+**OK, I'm  a bit rusty when it comes to algorithms.**
+
+```{r are-dates-sequential }
+events %>%
+  mutate(
+    next_out_of_sequence = (lead(date) < date)
+  ) %>%
+  count(next_out_of_sequence)
+```
+That one NA is the last in the sequence and has no next event. 
+
+**Assumption: dates are sequential**
