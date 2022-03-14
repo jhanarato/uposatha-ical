@@ -1,0 +1,97 @@
+---
+title: "Reviewing assumptions"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(lubridate)
+```
+
+## Get the data
+```{r import }
+events <- read_csv("events.csv", col_names = c("summary_text", "date")) %>%
+  select(date, summary_text) 
+```
+
+In the first analysis we arrived at a number of assumptions about the icalendar
+file from which we draw our data. Here I attempt to confirm each one.
+
+## Dates are in order
+```{r tag-sequential }
+sequential <- events %>%
+  mutate(
+    is_in_sequence = (lag(date) <= date)
+  )
+
+sequential %>% count(is_in_sequence)
+```
+
+All dates are sequential, keeping in mind `lag(date)` is `NA` for the first row. 
+
+## Some types of event stand alone
+
+Waxing moon, waning moon and first day of vassa never occur with another summary. 
+We can count the summary text entries for the dates these occur to confirm this
+
+**Oops, forgot new moons. Have to sort that out.**
+```{r solitary }
+solitary <- events %>% 
+  filter(summary_text %in% c("Waning Moon", "Waxing Moon", "First day of Vassa"))
+
+events %>% 
+  semi_join(solitary, by = "date") %>%
+  count(date) %>%
+  filter(n > 1)
+```
+
+## Create a tidy view
+
+Here we make a table to work with.
+
+```{r event_types }
+summary_types <- events %>%
+  mutate(
+    summary_type = if_else(str_detect(summary_text, "Full Moon"), "Full", "None"),
+    summary_type = if_else(str_detect(summary_text, "New Moon"), "New", summary_type),
+    summary_type = if_else(str_detect(summary_text, "Waxing Moon"), "Waxing", summary_type),
+    summary_type = if_else(str_detect(summary_text, "Waning Moon"), "Waning", summary_type),
+    summary_type = if_else(str_detect(summary_text, "First day of Vassa"), 
+                           "First day of Vassa", summary_type),
+    summary_type = if_else(str_detect(summary_text, "Last day of Vassa"), 
+                           "Last day of Vassa", summary_type),
+    summary_type = if_else(summary_text == "Māgha Pūjā", "Special", summary_type),
+    summary_type = if_else(summary_text == "Visākha Pūjā", "Special", summary_type),
+    summary_type = if_else(summary_text == "Āsāḷha Pūjā", "Special", summary_type),
+    summary_type = if_else(summary_text == "Pavāraṇā Day", "Special", summary_type),
+  )
+
+summary_types %>% count(summary_type)
+```
+Now we get the events per date.
+```{r events-per-date }
+summaries_per_date <- summary_types %>%
+  group_by(date) %>%
+  summarise(
+    summary_type,
+    summary_text_count = n()
+  ) 
+
+summaries_per_date
+```
+
+```{r varying-number-of-summaries }
+variation_by_type <- summaries_per_date %>%
+  group_by(summary_type) %>%
+  count(summary_text_count)
+
+variation_by_type
+```
+
+## Finally an easy to read table
+```{r pivot-wider }
+wider_variation_by_type <- variation_by_type %>%
+  pivot_wider(names_from = summary_text_count, values_from = n)
+
+wider_variation_by_type
+```

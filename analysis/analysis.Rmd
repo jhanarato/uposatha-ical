@@ -178,7 +178,7 @@ It appears that the last day of the vassa is not a moon day or a special day.
 **More than one event on same date**
 
 - Full moon + special day
-- Full mooon + special day (pavarana) + last day of vassa
+- Full moon + special day (pavarana) + last day of vassa
 
 ## Are dates sequential?
 
