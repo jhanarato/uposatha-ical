@@ -3,34 +3,30 @@ from icalendar.cal import Component
 
 
 class MahanikayaCalendar:
-    def __init__(self, ical):
+    def __init__(self, icalendar):
+        self._icalendar = icalendar
         self._events = []
         self.import_ical(ical)
 
-    def extract_details(self, component: Component):
-        if component.name != "VEVENT":
-            return None
-        dtstart = component.get('DTSTART')
-        summary = component.get('SUMMARY')
-
-        if dtstart != None and summary != None:
-            return {"date": dtstart.dt, "summary": summary}
-
-        return None
+    def extract_details(self):
+        for component in self._icalendar.walk():
+            if component.name == "VEVENT":
+                dtstart = component.get("DTSTART")
+                summary = component.get("SUMMARY")
+                if dtstart != None and summary != None:
+                    yield {"date": dtstart.dt, "summary": summary}
 
     def import_ical(self, ical):
         current_event = None
-        for component in ical.walk():
-            details = self.extract_details(component)
-            if details is not None:
-                if current_event is None:
-                    current_event = Event(details["date"])
+        for details in self.extract_details():
+            if current_event is None:
+                current_event = Event(details["date"])
 
-                if current_event.date != details["date"]:
-                    current_event = Event(details["date"])
+            if current_event.date != details["date"]:
+                current_event = Event(details["date"])
 
-                current_event.add_summary(details["summary"])
-                self._events.append(current_event)
+            current_event.add_summary(details["summary"])
+            self._events.append(current_event)
 
 
 
