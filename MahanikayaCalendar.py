@@ -3,6 +3,17 @@ from icalendar.cal import Component
 
 
 def extract_details(icalendar):
+    """
+    Generate event details from an icalendar
+
+    This specifically works with the current version of the Maha Nikaya icalendar
+    file used to generate the Forest Sangha calendars. The file is available here:
+
+    http://splendidmoons.github.io/ical/mahanikaya.ical
+
+    param: icalendar: The entire icalendar as a string.
+    return: A dictionary of date summary pairs on each iteration.
+    """
     for component in icalendar.walk():
         if component.name == "VEVENT":
             dtstart = component.get("DTSTART")
@@ -13,23 +24,18 @@ def extract_details(icalendar):
 
 class MahanikayaCalendar:
     def __init__(self):
-        self._events = []
+        self.events = []
 
     def import_ical(self, icalendar):
         for details in extract_details(icalendar):
             self._process_details(details)
 
     def _process_details(self, details):
-        if not self._events or self._events[-1].date != details["date"]:
-            self._events.append(Event(details))
+        # For the first event or when the date changes, create a new event.
+        if not self.events or self.events[-1].date != details["date"]:
+            self.events.append(Event(details))
         else:
-            self._events[-1].update(details)
-
-    def number_of_events(self):
-        return len(self._events)
-
-    def all_events(self):
-        return self._events
+            self.events[-1].update(details)
 
 
 class Event:
@@ -62,10 +68,10 @@ if __name__ == '__main__':
     calendar = MahanikayaCalendar()
     calendar.import_ical(ical)
 
-    print("Number of events: {}".format(calendar.number_of_events()))
+    print("Number of events: {}".format(len(calendar.events)))
 
     # Print a full lunar cycle
-    for event in calendar.all_events()[0:4]:
+    for event in calendar.events[0:4]:
         print(event)
 
 
