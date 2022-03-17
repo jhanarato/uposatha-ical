@@ -2,34 +2,28 @@ from icalendar import Calendar
 from icalendar.cal import Component
 
 
+def extract_details(icalendar):
+    for component in icalendar.walk():
+        if component.name == "VEVENT":
+            dtstart = component.get("DTSTART")
+            summary = component.get("SUMMARY")
+            if dtstart != None and summary != None:
+                yield {"date": dtstart.dt, "summary": summary}
+
+
 class MahanikayaCalendar:
-    def __init__(self, icalendar):
-        self._icalendar = icalendar
+    def __init__(self):
         self._events = []
-        self.import_ical(ical)
 
-    def extract_details(self):
-        for component in self._icalendar.walk():
-            if component.name == "VEVENT":
-                dtstart = component.get("DTSTART")
-                summary = component.get("SUMMARY")
-                if dtstart != None and summary != None:
-                    yield {"date": dtstart.dt, "summary": summary}
+    def import_ical(self, icalendar):
+        for details in extract_details(icalendar):
+            self._process_details(details)
 
-    def import_ical(self, ical):
-        current_event = None
-        for details in self.extract_details():
-            if current_event is None:
-                current_event = Event(details["date"])
-
-            if current_event.date != details["date"]:
-                current_event = Event(details["date"])
-
-            current_event.add_summary(details["summary"])
-            self._events.append(current_event)
-
-
-
+    def _process_details(self, details):
+        if not self._events or self._events[-1].date != details["date"]:
+            self._events.append(Event(details))
+        else:
+            self._events[-1].update(details)
 
     def number_of_events(self):
         return len(self._events)
@@ -39,9 +33,9 @@ class MahanikayaCalendar:
 
 
 class Event:
-    def __init__(self, date):
-        self.date = date
-        self.summaries = []
+    def __init__(self, details):
+        self.date = details["date"]
+        self.summaries = [details["summary"]]
 
         self.moon_phase = ""
         self.special_day = ""
@@ -50,8 +44,8 @@ class Event:
         self.week_of_season = -1
         self.weeks_in_season = -1
 
-    def add_summary(self, summary):
-        self.summaries.append(summary)
+    def update(self, details):
+        self.summaries.append(details["summary"])
 
     def __str__(self):
         outstr = self.date.isoformat()
@@ -65,7 +59,8 @@ if __name__ == '__main__':
         content = f.read()
 
     ical = Calendar.from_ical(content)
-    calendar = MahanikayaCalendar(ical)
+    calendar = MahanikayaCalendar()
+    calendar.import_ical(ical)
 
     print("Number of events: {}".format(calendar.number_of_events()))
 
