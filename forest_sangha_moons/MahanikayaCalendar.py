@@ -11,8 +11,8 @@ def extract_details(icalendar):
 
     http://splendidmoons.github.io/ical/mahanikaya.ical
 
-    param: icalendar: The entire icalendar as a string.
-    return: A dictionary of date summary pairs on each iteration.
+    :param icalendar: The contents of the icalendar as a string.
+    :returns: A dictionary with two values: date and summary
     """
     for component in icalendar.walk():
         if component.name == "VEVENT":
@@ -61,7 +61,7 @@ class Event:
 
 if __name__ == '__main__':
     content = ""
-    with open("mahanikaya.ical", "r") as f:
+    with open("../mahanikaya.ical", "r") as f:
         content = f.read()
 
     ical = Calendar.from_ical(content)

@@ -1,4 +1,4 @@
-from MahanikayaCalendar import MahanikayaCalendar
+from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
 import requests
 from icalendar import Calendar

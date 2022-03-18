@@ -1,10 +1,10 @@
-from MahanikayaCalendar import MahanikayaCalendar
+from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
 from icalendar import Calendar
 
 content = ""
 
-with open("mahanikaya.ical", "r") as f:
+with open("../mahanikaya.ical", "r") as f:
     content = f.read()
 
 cal = Calendar.from_ical(content)
