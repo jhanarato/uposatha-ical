@@ -59,7 +59,8 @@ class Event:
             if first_word in phase_names:
                 self.moon_phase = first_word
             else:
-                self.moon_phase = "Other"
+                # Only "First day of Vassa" does not fall on a moon day.
+                self.moon_phase = "None"
 
 
 
