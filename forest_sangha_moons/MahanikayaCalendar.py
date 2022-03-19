@@ -46,12 +46,23 @@ class Event:
         self.moon_phase = ""
         self.special_day = ""
 
-        self.season = ""
-        self.week_of_season = -1
-        self.weeks_in_season = -1
+        self.season = None
+        self.week_of_season = 0
 
     def update(self, details):
         self.summaries.append(details["summary"])
+
+    def _set_moon_phase(self):
+        phase_names = ["Full", "Waning", "New", "Waxing"]
+        for summary in self.summaries:
+            first_word = summary.split()[0]
+            if first_word in phase_names:
+                self.moon_phase = first_word
+            else:
+                self.moon_phase = "Other"
+
+
+
 
     def __str__(self):
         outstr = self.date.isoformat()
@@ -59,9 +70,17 @@ class Event:
             outstr = outstr + "\n  {}".format(summary)
         return outstr
 
+
+class Season:
+    def __init__(self):
+        self.season_name = ""
+        self.number_of_weeks = 0
+        self.events = []
+
+
 if __name__ == '__main__':
     content = ""
-    with open("../mahanikaya.ical", "r") as f:
+    with open("mahanikaya.ical", "r") as f:
         content = f.read()
 
     ical = Calendar.from_ical(content)
