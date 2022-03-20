@@ -8,26 +8,34 @@ class TestEvent(TestCase):
         waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
         event = Event(waxing_detail)
         event._set_moon_phase()
-        self.assertEqual("Waxing", event.moon_phase)
+        self.assertEqual("Waxing", event.moon_name)
 
         waning_detail = {"date": date(2022, 3, 18), "summary": "Waning Moon"}
         event = Event(waning_detail)
         event._set_moon_phase()
-        self.assertEqual("Waning", event.moon_phase)
+        self.assertEqual("Waning", event.moon_name)
 
         full_detail = {"date": date(2022, 3, 18), "summary": "Full Moon - 15 day Hemanta 6/8"}
         event = Event(full_detail)
         event._set_moon_phase()
-        self.assertEqual("Full", event.moon_phase)
+        self.assertEqual("Full", event.moon_name)
 
         new_detail = {"date": date(2022, 3, 18), "summary": "New Moon - 15 day Hemanta 5/8"}
         event = Event(new_detail)
         event._set_moon_phase()
-        self.assertEqual("New", event.moon_phase)
+        self.assertEqual("New", event.moon_name)
 
         vassa_first_day_detail = {"date": date(2022, 3, 18), "summary": "First day of Vassa"}
         event = Event(vassa_first_day_detail)
         event._set_moon_phase()
-        self.assertEqual("None", event.moon_phase)
+        self.assertEqual("None", event.moon_name)
 
-
+    def test_set_special_day(self):
+        # Every special day falls on a full moon day.
+        full_detail = {"date": date(2022, 3, 18), "summary": "Full Moon - 15 day Hemanta 6/8"}
+        special_detail = {"date": date(2022, 3, 18), "summary": "Āsāḷha Pūjā"}
+        event = Event(full_detail)
+        event.update(special_detail)
+        event._set_moon_phase()
+        event._set_special_days()
+        self.assertEqual("Āsāḷha Pūjā", event.special_day)
