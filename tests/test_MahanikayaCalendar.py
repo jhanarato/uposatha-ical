@@ -39,3 +39,38 @@ class TestEvent(TestCase):
         event._set_moon_phase()
         event._set_special_days()
         self.assertEqual("Āsāḷha Pūjā", event.special_day)
+
+    def test_set_first_vassa(self):
+        # The first day of vassa is not a moon day.
+        detail = {"date": date(2022, 3, 18), "summary": "First day of Vassa"}
+        event = Event(detail)
+        event._set_vassa_days()
+        self.assertEqual("First day of Vassa", event.vassa_day)
+
+    def test_set_last_vassa_day(self):
+        # The only day with three summaries is the end of the rains.
+        full_detail = {"date": date(2022, 3, 18), "summary": "Full Moon - 15 day Hemanta 6/8"}
+        special_detail = {"date": date(2022, 3, 18), "summary": "Pavāraṇā Day"}
+        last_detail = {"date": date(2022, 3, 18), "summary": "Last day of Vassa"}
+
+        event = Event(full_detail)
+        event.update(special_detail)
+        event.update(last_detail)
+
+        event._set_vassa_days()
+        self.assertEqual("Last day of Vassa", event.vassa_day)
+
+    def test_process(self):
+        full_detail = {"date": date(2022, 3, 18), "summary": "Full Moon - 15 day Hemanta 6/8"}
+        special_detail = {"date": date(2022, 3, 18), "summary": "Pavāraṇā Day"}
+        last_detail = {"date": date(2022, 3, 18), "summary": "Last day of Vassa"}
+
+        event = Event(full_detail)
+        event.update(special_detail)
+        event.update(last_detail)
+
+        event.process()
+
+        self.assertEqual("Full", event.moon_name)
+        self.assertEqual("Pavāraṇā Day", event.special_day)
+        self.assertEqual("Last day of Vassa", event.vassa_day)

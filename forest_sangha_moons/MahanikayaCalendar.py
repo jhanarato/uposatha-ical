@@ -78,12 +78,14 @@ class Event:
 
         self.moon_name = ""
         self.special_day = ""
+        self.vassa_day = ""
 
         self.season = None
         self.week_of_season = 0
 
         self.phase_names = ["Full", "Waning", "New", "Waxing"]
         self.special_days = ["Āsāḷha Pūjā", "Māgha Pūjā", "Pavāraṇā Day", "Visākha Pūjā"]
+        self.vassa_days = ["First day of Vassa", "Last day of Vassa"]
 
     def update(self, details):
         """
@@ -100,6 +102,7 @@ class Event:
             first_word = summary.split()[0]
             if first_word in self.phase_names:
                 self.moon_name = first_word
+                return
             else:
                 # Only "First day of Vassa" does not fall on a moon day.
                 self.moon_name = "None"
@@ -109,6 +112,17 @@ class Event:
         for summary in self.summaries:
             if summary in self.special_days:
                 self.special_day = summary
+
+    def _set_vassa_days(self):
+        """ Set the first & last days of the vassa (i.e. rains retreat) """
+        for summary in self.summaries:
+            if summary in self.vassa_days:
+                self.vassa_day = summary
+
+    def process(self):
+        self._set_moon_phase()
+        self._set_special_days()
+        self._set_vassa_days()
 
     def __str__(self):
         """
