@@ -1,7 +1,8 @@
 from unittest import TestCase
 from datetime import date
 
-from forest_sangha_moons.MahanikayaCalendar import Event
+from forest_sangha_moons.MahanikayaCalendar import Event, ExtendedSummary
+
 
 class TestEvent(TestCase):
     def test_set_moon_phase(self):
@@ -74,3 +75,26 @@ class TestEvent(TestCase):
         self.assertEqual("Full", event.moon_name)
         self.assertEqual("Pavāraṇā Day", event.special_day)
         self.assertEqual("Last day of Vassa", event.vassa_day)
+
+
+class TestExtendedSummary(TestCase):
+    def setUp(self):
+        self.full = ExtendedSummary("Full Moon - 15 day Hemanta 6/8")
+        self.new = ExtendedSummary("New Moon - 14 day Gimha 3/10")
+
+    def test_days_in_fortnight(self):
+        self.assertEqual(15, self.full.days_in_fortnight())
+        self.assertEqual(14, self.new.days_in_fortnight())
+        # TODO: Check exceptions
+
+    def test_season_name(self):
+        self.assertEqual("Hemanta", self.full.season_name())
+        self.assertEqual("Gimha", self.new.season_name())
+
+    def test_week_number(self):
+        self.assertEqual(6, self.full.week_number())
+        self.assertEqual(3, self.new.week_number())
+
+    def test_weeks_in_season(self):
+        self.assertEqual(8, self.full.weeks_in_season())
+        self.assertEqual(10, self.new.weeks_in_season())

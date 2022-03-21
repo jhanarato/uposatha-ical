@@ -1,3 +1,4 @@
+import re
 import icalendar
 
 def extract_details(icalendar):
@@ -141,13 +142,50 @@ class Event:
         return outstr
 
 
-
-
 class Season:
     def __init__(self):
         self.season_name = ""
         self.number_of_weeks = 0
         self.events = []
+
+class ExtendedSummary():
+    """
+    Parser for summary text where there is extra information.
+
+    Only the full and new moon summaries have extra information. This
+    class provides methods for obtaining this information.
+
+    Summary examples:
+        "Full Moon - 15 day Hemanta 6/8"
+        "New Moon - 14 day Gimha 3/10"
+    """
+
+    def __init__(self, summary):
+        self.summary = summary
+
+    def days_in_fortnight(self):
+        if "15 day" in self.summary:
+            return 15
+        else:
+            return 14
+        # TODO: Throw an exception if neither found.
+
+    def season_name(self):
+        seasons = ["Hemanta", "Gimha", "Vassāna"]
+        for season in seasons:
+            if season in self.summary:
+                return season
+            # TODO: Throw an exception if the season is not found.
+
+    def week_number(self):
+        numbers = re.findall("[0-9]+", self.summary)
+        return int(numbers[1])
+        # TODO: Throw exception if not 3 numbers.
+
+    def weeks_in_season(self):
+        numbers = re.findall("[0-9]+", self.summary)
+        return int(numbers[2])
+        # TODO: Throw exception if not 3 numbers.
 
 
 if __name__ == '__main__':
