@@ -51,7 +51,10 @@ class MahanikayaCalendar:
         :param details: A dictionary with 'keys' date & 'summary'.
         """
         # For the first event or when the date changes, create a new event.
-        if not self.events or self.events[-1].date != details["date"]:
+        if not self.events:
+            self.events.append(Event(details))
+        elif self.events[-1].date != details["date"]:
+            self.events[-1].process()
             self.events.append(Event(details))
         else:
             self.events[-1].update(details)
@@ -130,10 +133,14 @@ class Event:
 
         :return: A string representation of the Event.
         """
-        outstr = self.date.isoformat()
-        for summary in self.summaries:
-            outstr = outstr + "\n  {}".format(summary)
+        outstr = "{}: {}".format(self.date.isoformat(), self.moon_name)
+        if self.special_day:
+            outstr += " : {}".format(self.special_day)
+        if self.vassa_day:
+            outstr += " : {}".format(self.vassa_day)
         return outstr
+
+
 
 
 class Season:
@@ -155,7 +162,11 @@ if __name__ == '__main__':
     print("Number of events: {}".format(len(calendar.events)))
 
     # Print a full lunar cycle
-    for event in calendar.events[0:4]:
+    for event in calendar.events[0:12]:
         print(event)
 
+    # Print the pavarana
+    pavaranas = [event for event in calendar.events if event.special_day == "Pavāraṇā Day"]
 
+    for pavarana in pavaranas:
+        print(pavarana)
