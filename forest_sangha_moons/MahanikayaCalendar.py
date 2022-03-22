@@ -157,9 +157,9 @@ class Event:
 
 
 class Season:
-    def __init__(self):
-        self.season_name = ""
-        self.number_of_weeks = 0
+    def __init__(self, extended_summary):
+        self.season_name = extended_summary.season_name()
+        self.number_of_weeks = extended_summary.weeks_in_season()
         self.events = []
 
 class ExtendedSummary():
