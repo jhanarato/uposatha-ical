@@ -91,8 +91,8 @@ class TestExtendedSummary(TestCase):
         self.new = ExtendedSummary("New Moon - 14 day Gimha 3/10")
 
     def test_days_in_fortnight(self):
-        self.assertEqual(15, self.full.days_in_fortnight())
-        self.assertEqual(14, self.new.days_in_fortnight())
+        self.assertEqual(15, self.full.uposatha_days())
+        self.assertEqual(14, self.new.uposatha_days())
         # TODO: Check exceptions
 
     def test_season_name(self):
@@ -100,8 +100,8 @@ class TestExtendedSummary(TestCase):
         self.assertEqual("Gimha", self.new.season_name())
 
     def test_week_number(self):
-        self.assertEqual(6, self.full.week_number())
-        self.assertEqual(3, self.new.week_number())
+        self.assertEqual(6, self.full.week_of_season())
+        self.assertEqual(3, self.new.week_of_season())
 
     def test_weeks_in_season(self):
         self.assertEqual(8, self.full.weeks_in_season())

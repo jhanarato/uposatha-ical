@@ -85,6 +85,7 @@ class Event:
 
         self.season = None
         self.week_of_season = 0
+        self.uposatha_days = 0
 
         self.phase_names = ["Full", "Waning", "New", "Waxing"]
         self.special_days = ["Āsāḷha Pūjā", "Māgha Pūjā", "Pavāraṇā Day", "Visākha Pūjā"]
@@ -134,6 +135,10 @@ class Event:
         self._set_vassa_days()
         self._set_extended_summary()
 
+        if self.extended_summary:
+            self.week_of_season = self.extended_summary.week_of_season()
+            self.uposatha_days = self.extended_summary.uposatha_days()
+
     def __str__(self):
         """
         Pretty print the event.
@@ -145,6 +150,9 @@ class Event:
             outstr += " : {}".format(self.special_day)
         if self.vassa_day:
             outstr += " : {}".format(self.vassa_day)
+        if self.extended_summary:
+            outstr += " : Week {}".format(self.week_of_season)
+            outstr += " : Uposatha Days {}".format(self.uposatha_days)
         return outstr
 
 
@@ -169,7 +177,7 @@ class ExtendedSummary():
     def __init__(self, summary):
         self.summary = summary
 
-    def days_in_fortnight(self):
+    def uposatha_days(self):
         if "15 day" in self.summary:
             return 15
         else:
@@ -183,7 +191,7 @@ class ExtendedSummary():
                 return season
             # TODO: Throw an exception if the season is not found.
 
-    def week_number(self):
+    def week_of_season(self):
         numbers = re.findall("[0-9]+", self.summary)
         return int(numbers[1])
         # TODO: Throw exception if not 3 numbers.
