@@ -76,6 +76,14 @@ class TestEvent(TestCase):
         self.assertEqual("Pavāraṇā Day", event.special_day)
         self.assertEqual("Last day of Vassa", event.vassa_day)
 
+    def test_set_extended_summary(self):
+        full_detail = {"date": date(2022, 3, 18), "summary": "Full Moon - 15 day Hemanta 6/8"}
+
+        event = Event(full_detail)
+        event.process()
+
+        season = event.extended_summary.season_name()
+        self.assertEqual("Hemanta", season)
 
 class TestExtendedSummary(TestCase):
     def setUp(self):

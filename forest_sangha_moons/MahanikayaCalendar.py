@@ -51,7 +51,6 @@ class MahanikayaCalendar:
 
         :param details: A dictionary with 'keys' date & 'summary'.
         """
-        # For the first event or when the date changes, create a new event.
         if not self.events:
             self.events.append(Event(details))
         elif self.events[-1].date != details["date"]:
@@ -90,6 +89,7 @@ class Event:
         self.phase_names = ["Full", "Waning", "New", "Waxing"]
         self.special_days = ["Āsāḷha Pūjā", "Māgha Pūjā", "Pavāraṇā Day", "Visākha Pūjā"]
         self.vassa_days = ["First day of Vassa", "Last day of Vassa"]
+        self.extended_summary = None
 
     def update(self, details):
         """
@@ -123,10 +123,16 @@ class Event:
             if summary in self.vassa_days:
                 self.vassa_day = summary
 
+    def _set_extended_summary(self):
+        for summary in self.summaries:
+            if "Full" in summary or "New" in summary:
+                self.extended_summary = ExtendedSummary(summary)
+
     def process(self):
         self._set_moon_phase()
         self._set_special_days()
         self._set_vassa_days()
+        self._set_extended_summary()
 
     def __str__(self):
         """
