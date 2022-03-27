@@ -46,6 +46,15 @@ class TestMahaNikayaCalendar(TestCase):
         self.assertEqual("Waxing", cal.events[0].moon_name)
         self.assertEqual("Full", cal.events[1].moon_name)
 
+    def test_date_has_changed(self):
+        waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
+        full_detail = {"date": date(2022, 3, 19), "summary": "Full Moon - 15 day Hemanta 6/8"}
+
+        cal = MahanikayaCalendar()
+        cal._process_details(waxing_detail)
+        self.assertTrue(cal._new_date(full_detail))
+
+
 class TestEvent(TestCase):
     def test_set_moon_phase(self):
         waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}

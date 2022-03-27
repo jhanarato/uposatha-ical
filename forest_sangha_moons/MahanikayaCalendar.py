@@ -57,18 +57,28 @@ class MahanikayaCalendar:
             self._add_subsequent_event(details)
 
     def _add_first_event(self, details):
-        current = Event(details)
-        self.events.append(current)
-        current.process()
+        new_event = Event(details)
+        self.events.append(new_event)
+        new_event.process()
 
     def _add_subsequent_event(self, details):
-        current = self.events[-1]
-        if current.date != details["date"]:
-            current = Event(details)
-            self.events.append(current)
+        current_event = self._get_current()
+
+        if self._new_date(details):
+            new_event = Event(details)
+            self.events.append(new_event)
+            new_event.process()
         else:
-            current.add_details(details)
-        current.process()
+            current_event.add_details(details)
+            current_event.process()
+
+    def _new_date(self, details):
+        current_event = self._get_current()
+        return current_event.date != details["date"]
+
+    def _get_current(self):
+        return self.events[-1]
+
 
 class Event:
     """
