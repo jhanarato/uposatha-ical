@@ -1,8 +1,50 @@
 from unittest import TestCase
 from datetime import date
 
-from forest_sangha_moons.MahanikayaCalendar import Event, ExtendedSummary
+from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar, Event, ExtendedSummary
 
+class TestMahaNikayaCalendar(TestCase):
+    def test_event_with_one_detail(self):
+        waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
+
+        cal = MahanikayaCalendar()
+        cal._process_details(waxing_detail)
+
+        self.assertEqual(1, len(cal.events))
+        self.assertEqual("Waxing", cal.events[0].moon_name)
+
+    def test_two_events_with_one_detail_each(self):
+        waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
+        full_detail = {"date": date(2022, 3, 19), "summary": "Full Moon - 15 day Hemanta 6/8"}
+
+        cal = MahanikayaCalendar()
+        cal._process_details(waxing_detail)
+        cal._process_details(full_detail)
+
+        self.assertEqual("Waxing", cal.events[0].moon_name)
+        self.assertEqual("Full", cal.events[1].moon_name)
+
+    def test_add_first_event(self):
+        waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
+
+        cal = MahanikayaCalendar()
+        cal._add_first_event(waxing_detail)
+
+        self.assertEqual(1, len(cal.events))
+        self.assertEqual("Waxing", cal.events[0].moon_name)
+
+
+    def test_add_subsequent_event(self):
+        waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
+        full_detail = {"date": date(2022, 3, 19), "summary": "Full Moon - 15 day Hemanta 6/8"}
+
+        cal = MahanikayaCalendar()
+        cal._add_first_event(waxing_detail)
+        cal._add_subsequent_event(full_detail)
+
+        self.assertEqual(2, len(cal.events))
+        self.assertEqual("Waxing", cal.events[0].moon_name)
+        self.assertEqual("Full", cal.events[1].moon_name)
 
 class TestEvent(TestCase):
     def test_set_moon_phase(self):
@@ -36,7 +78,7 @@ class TestEvent(TestCase):
         full_detail = {"date": date(2022, 3, 18), "summary": "Full Moon - 15 day Hemanta 6/8"}
         special_detail = {"date": date(2022, 3, 18), "summary": "Āsāḷha Pūjā"}
         event = Event(full_detail)
-        event.update(special_detail)
+        event.add_details(special_detail)
         event._set_moon_phase()
         event._set_special_days()
         self.assertEqual("Āsāḷha Pūjā", event.special_day)
@@ -55,8 +97,8 @@ class TestEvent(TestCase):
         last_detail = {"date": date(2022, 3, 18), "summary": "Last day of Vassa"}
 
         event = Event(full_detail)
-        event.update(special_detail)
-        event.update(last_detail)
+        event.add_details(special_detail)
+        event.add_details(last_detail)
 
         event._set_vassa_days()
         self.assertEqual("Last day of Vassa", event.vassa_day)
@@ -67,8 +109,8 @@ class TestEvent(TestCase):
         last_detail = {"date": date(2022, 3, 18), "summary": "Last day of Vassa"}
 
         event = Event(full_detail)
-        event.update(special_detail)
-        event.update(last_detail)
+        event.add_details(special_detail)
+        event.add_details(last_detail)
 
         event.process()
 
@@ -82,7 +124,7 @@ class TestEvent(TestCase):
         event = Event(full_detail)
         event.process()
 
-        season = event.extended_summary.season_name()
+        season = event._extended_summary.season_name()
         self.assertEqual("Hemanta", season)
 
 class TestExtendedSummary(TestCase):

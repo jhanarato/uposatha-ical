@@ -52,12 +52,23 @@ class MahanikayaCalendar:
         :param details: A dictionary with 'keys' date & 'summary'.
         """
         if not self.events:
-            self.events.append(Event(details))
-        elif self.events[-1].date != details["date"]:
-            self.events[-1].process()
-            self.events.append(Event(details))
+            self._add_first_event(details)
         else:
-            self.events[-1].update(details)
+            self._add_subsequent_event(details)
+
+    def _add_first_event(self, details):
+        current = Event(details)
+        self.events.append(current)
+        current.process()
+
+    def _add_subsequent_event(self, details):
+        current = self.events[-1]
+        if current.date != details["date"]:
+            current = Event(details)
+            self.events.append(current)
+        else:
+            current.add_details(details)
+        current.process()
 
 class Event:
     """
@@ -90,9 +101,10 @@ class Event:
         self.phase_names = ["Full", "Waning", "New", "Waxing"]
         self.special_days = ["Āsāḷha Pūjā", "Māgha Pūjā", "Pavāraṇā Day", "Visākha Pūjā"]
         self.vassa_days = ["First day of Vassa", "Last day of Vassa"]
-        self.extended_summary = None
 
-    def update(self, details):
+        self._extended_summary = None
+
+    def add_details(self, details):
         """
         Update an initialised event with extra details.
 
@@ -127,7 +139,7 @@ class Event:
     def _set_extended_summary(self):
         for summary in self.summaries:
             if "Full" in summary or "New" in summary:
-                self.extended_summary = ExtendedSummary(summary)
+                self._extended_summary = ExtendedSummary(summary)
 
     def process(self):
         self._set_moon_phase()
@@ -135,9 +147,9 @@ class Event:
         self._set_vassa_days()
         self._set_extended_summary()
 
-        if self.extended_summary:
-            self.week_of_season = self.extended_summary.week_of_season()
-            self.uposatha_days = self.extended_summary.uposatha_days()
+        if self._extended_summary:
+            self.week_of_season = self._extended_summary.week_of_season()
+            self.uposatha_days = self._extended_summary.uposatha_days()
 
     def __str__(self):
         """
@@ -150,7 +162,7 @@ class Event:
             outstr += " : {}".format(self.special_day)
         if self.vassa_day:
             outstr += " : {}".format(self.vassa_day)
-        if self.extended_summary:
+        if self._extended_summary:
             outstr += " : Week {}".format(self.week_of_season)
             outstr += " : Uposatha Days {}".format(self.uposatha_days)
         return outstr
