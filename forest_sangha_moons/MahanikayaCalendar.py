@@ -28,6 +28,7 @@ class MahanikayaCalendar:
     def __init__(self):
         self.events = []
         self.seasons = []
+        self._incomplete_event = None
 
     def import_ical(self, icalendar):
         """
@@ -42,6 +43,8 @@ class MahanikayaCalendar:
         for details in extract_details(icalendar):
             self._process_details(details)
 
+        # TODO: Last event won't be complete.
+
     def _process_details(self, details):
         """
         This is called whenever we get a pair of dates & summaries.
@@ -51,33 +54,29 @@ class MahanikayaCalendar:
 
         :param details: A dictionary with 'keys' date & 'summary'.
         """
-        if not self.events:
-            self._add_first_event(details)
+
+        # Time to refactor! We are storing the Event in the list before
+        # it is finalised and updating it in the list. This has caused problems
+        # and is inelegant. Instead:
+        #
+        #   Keep track of the event we're working on.
+        #   When we get a new date, finalise the Event and only then append it to the list.
+
+        if not self._incomplete_event:
+            # Create first Event
+            self._incomplete_event = Event(details)
+        elif self._new_date(details):
+            # The next date is different, make a new event.
+            self._incomplete_event.complete()
+            complete_event = self._incomplete_event
+            self.events.append(complete_event)
+            self._incomplete_event = Event(details)
         else:
-            self._add_subsequent_event(details)
-
-    def _add_first_event(self, details):
-        new_event = Event(details)
-        self.events.append(new_event)
-        new_event.process()
-
-    def _add_subsequent_event(self, details):
-        current_event = self._get_current()
-
-        if self._new_date(details):
-            new_event = Event(details)
-            self.events.append(new_event)
-            new_event.process()
-        else:
-            current_event.add_details(details)
-            current_event.process()
+            # The next date is the same as the last.
+            self._incomplete_event.add_details(details)
 
     def _new_date(self, details):
-        current_event = self._get_current()
-        return current_event.date != details["date"]
-
-    def _get_current(self):
-        return self.events[-1]
+        return self._incomplete_event.date != details["date"]
 
 
 class Event:
@@ -98,6 +97,7 @@ class Event:
         :param details: The first details, a dictionary with 'keys' date & 'summary'
         """
         self.date = details["date"]
+        # TODO: make private
         self.summaries = [details["summary"]]
 
         self.moon_name = ""
@@ -151,7 +151,7 @@ class Event:
             if "Full" in summary or "New" in summary:
                 self._extended_summary = ExtendedSummary(summary)
 
-    def process(self):
+    def complete(self):
         self._set_moon_phase()
         self._set_special_days()
         self._set_vassa_days()
