@@ -43,7 +43,8 @@ class MahanikayaCalendar:
         for details in extract_details(icalendar):
             self._process_details(details)
 
-        # TODO: Last event won't be complete.
+        # Complete the last event.
+        self._complete_event()
 
     def _process_details(self, details):
         """
@@ -226,12 +227,14 @@ if __name__ == '__main__':
 
     print("Number of events: {}".format(len(calendar.events)))
 
-    # Print a full lunar cycle
+    print("First 12 events")
     for event in calendar.events[0:12]:
         print(event)
 
-    # Print the pavarana
+    print("Pavaranas")
     pavaranas = [event for event in calendar.events if event.special_day == "Pavāraṇā Day"]
-
     for pavarana in pavaranas:
         print(pavarana)
+
+    print("Last event")
+    print(calendar.events[-1])
