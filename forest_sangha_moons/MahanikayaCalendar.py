@@ -54,30 +54,21 @@ class MahanikayaCalendar:
 
         :param details: A dictionary with 'keys' date & 'summary'.
         """
-
-        # Time to refactor! We are storing the Event in the list before
-        # it is finalised and updating it in the list. This has caused problems
-        # and is inelegant. Instead:
-        #
-        #   Keep track of the event we're working on.
-        #   When we get a new date, finalise the Event and only then append it to the list.
-
         if not self._incomplete_event:
-            # Create first Event
             self._incomplete_event = Event(details)
         elif self._new_date(details):
-            # The next date is different, make a new event.
-            self._incomplete_event.complete()
-            complete_event = self._incomplete_event
-            self.events.append(complete_event)
+            self._complete_event()
             self._incomplete_event = Event(details)
         else:
-            # The next date is the same as the last.
             self._incomplete_event.add_details(details)
 
     def _new_date(self, details):
         return self._incomplete_event.date != details["date"]
 
+    def _complete_event(self):
+        self._incomplete_event.complete()
+        complete_event = self._incomplete_event
+        self.events.append(complete_event)
 
 class Event:
     """
