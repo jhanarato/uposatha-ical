@@ -1,1 +1,1 @@
-from .MahanikayaCalendar import MahanikayaCalendar, Event, ExtendedSummary
+from .MahanikayaCalendar import MahanikayaCalendar, Event, Season

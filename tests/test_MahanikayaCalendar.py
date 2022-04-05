@@ -1,7 +1,8 @@
 from unittest import TestCase
 from datetime import date
 
-from forest_sangha_moons import MahanikayaCalendar, Event, ExtendedSummary
+from forest_sangha_moons import MahanikayaCalendar, Event, Season
+from forest_sangha_moons.MahanikayaCalendar import SeasonMaker, ExtendedSummary
 
 class TestMahaNikayaCalendar(TestCase):
     def test_one_detail(self):
@@ -52,6 +53,79 @@ class TestMahaNikayaCalendar(TestCase):
         cal = MahanikayaCalendar()
         cal._process_details(waxing_detail)
         self.assertTrue(cal._new_date(full_detail))
+
+class TestSeasonMaker(TestCase):
+    def details_to_seasons(self, details):
+        cal = MahanikayaCalendar()
+        for moon in details:
+            cal._process_details(moon)
+        maker = SeasonMaker(cal.events)
+        return maker.get_seasons()
+
+    def test_seasons_first_lunar_cycle(self):
+        # These are the first four VEVENTS from the real data.
+        lunar_cycle = [
+            {"date": date(2010, 1, 8), "summary": "Waning Moon"},
+            {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"},
+            {"date": date(2010, 1, 23), "summary": "Waxing Moon"},
+            {"date": date(2010, 1, 30), "summary": "Full Moon - 15 day Hemanta 6/8"}
+        ]
+
+        seasons = self.details_to_seasons(lunar_cycle)
+
+        self.assertEqual(1, len(seasons), "There should be exactly one season")
+
+        season = season[0]
+
+        self.assertEqual("Hemanta", season.season_name)
+        self.assertEqual(8, season.uposatha_count)
+        self.assertEqual(4, len(season.events))
+
+        event = events[0]
+
+        self.assertEqual("Waxing", event.moon_name)
+        self.assertEqual("Hemanta", event.season.season_name)
+
+    def test_season_change(self):
+        season_change = [
+            # End of cold season
+            {"date": date(2010, 2, 28), "summary": "Full Moon - 15 day Hemanta 8/8"},
+            {"date": date(2022, 2, 28), "summary": "Māgha Pūjā"},
+            # Changing to hot season
+            {"date": date(2010, 3, 8), "summary": "Waning Moon"},
+            {"date": date(2010, 3, 15), "summary": "New Moon - 15 day Gimha 1/10"},
+        ]
+
+        seasons = self.details_to_seasons(season_change)
+
+        self.assertEqual(2, len(seasons), "There should be two seasons")
+
+        self.assertEqual("Hemanta", seasons[0].season_name, "First season is Hemanta")
+        self.assertEqual("Gimha", seasons[1].season_name, "Second season is Gimha")
+
+        self.assertEqual(2, len(seasons[0].events), "First season has two events")
+        self.assertEqual(2, len(seasons[1].events), "Second seasons has two events")
+
+
+    def test_trailing_waning_moon(self):
+        trailing_waning = [
+            # End of cold season
+            {"date": date(2010, 2, 28), "summary": "Full Moon - 15 day Hemanta 8/8"},
+            {"date": date(2022, 2, 28), "summary": "Māgha Pūjā"},
+            # A new hot season, but only a waning moon without an
+            # extended summary and no subsequent new moon.
+            {"date": date(2010, 3, 8), "summary": "Waning Moon"}
+        ]
+
+        seasons = self.details_to_seasons(trailing_waning)
+
+        self.assertEqual(2, len(seasons), "There should be two seasons")
+
+        self.assertEqual("Hemanta", seasons[0].season_name, "First season is Hemanta")
+        self.assertEqual("Gimha", seasons[1].season_name, "Second season is Gimha")
+
+        self.assertEqual(2, len(seasons[0].events), "First season has two events")
+        self.assertEqual(1, len(seasons[1].events), "Second seasons has one event")
 
 
 class TestEvent(TestCase):
@@ -149,10 +223,10 @@ class TestExtendedSummary(TestCase):
         self.assertEqual("Hemanta", self.full.season_name())
         self.assertEqual("Gimha", self.new.season_name())
 
-    def test_week_number(self):
-        self.assertEqual(6, self.full.week_of_season())
-        self.assertEqual(3, self.new.week_of_season())
+    def test_uposatha_number(self):
+        self.assertEqual(6, self.full.uposatha_of_season())
+        self.assertEqual(3, self.new.uposatha_of_season())
 
-    def test_weeks_in_season(self):
-        self.assertEqual(8, self.full.weeks_in_season())
-        self.assertEqual(10, self.new.weeks_in_season())
+    def test_uposatha_in_season(self):
+        self.assertEqual(8, self.full.uposathas_in_season())
+        self.assertEqual(10, self.new.uposathas_in_season())

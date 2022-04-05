@@ -28,7 +28,9 @@ class MahanikayaCalendar:
     def __init__(self):
         self.events = []
         self.seasons = []
+
         self._incomplete_event = None
+        self._incomplete_season = None
 
     def import_ical(self, icalendar):
         """
@@ -46,6 +48,9 @@ class MahanikayaCalendar:
         # Complete the last event.
         self._complete_event()
 
+        season_maker = SeasonMaker(self.events)
+        self.seasons = season_maker.get_seasons()
+
     def _process_details(self, details):
         """
         This is called whenever we get a pair of dates & summaries.
@@ -55,6 +60,9 @@ class MahanikayaCalendar:
 
         :param details: A dictionary with 'keys' date & 'summary'.
         """
+        self._update_events(details)
+
+    def _update_events(self, details):
         if not self._incomplete_event:
             self._incomplete_event = Event(details)
         elif self._new_date(details):
@@ -70,6 +78,7 @@ class MahanikayaCalendar:
         self._incomplete_event.complete()
         complete_event = self._incomplete_event
         self.events.append(complete_event)
+
 
 class Event:
     """
@@ -97,7 +106,7 @@ class Event:
         self.vassa_day = ""
 
         self.season = None
-        self.week_of_season = 0
+        self.uposatha_of_season = 0
         self.uposatha_days = 0
 
         self.phase_names = ["Full", "Waning", "New", "Waxing"]
@@ -150,7 +159,7 @@ class Event:
         self._set_extended_summary()
 
         if self._extended_summary:
-            self.week_of_season = self._extended_summary.week_of_season()
+            self.uposatha_of_season = self._extended_summary.uposatha_of_season()
             self.uposatha_days = self._extended_summary.uposatha_days()
 
     def __str__(self):
@@ -165,16 +174,43 @@ class Event:
         if self.vassa_day:
             outstr += " : {}".format(self.vassa_day)
         if self._extended_summary:
-            outstr += " : Week {}".format(self.week_of_season)
+            outstr += " : Week {}".format(self.uposatha_of_season)
             outstr += " : Uposatha Days {}".format(self.uposatha_days)
         return outstr
 
 
 class Season:
-    def __init__(self, extended_summary):
-        self.season_name = extended_summary.season_name()
-        self.number_of_weeks = extended_summary.weeks_in_season()
-        self.events = []
+    """
+    Representation of a season in the calendar including events
+    for that period.
+    """
+    def __init__(self, first_event: Event):
+        self.season_name = first_event.season
+        self.uposatha_count = first_event.uposatha_of_season
+        self.events = [first_event]
+
+
+class SeasonMaker:
+    """
+    Generates a list of Seasons from a list of Events.
+    """
+    def __init__(self, events):
+        self._events = events
+
+    def get_seasons(self):
+        seasons = []
+
+        # Only new and full moons have season info.
+        # Waning & waxing moons have the same season as the following moon.
+        # Full follows waxing, new follows waning.
+        # It is possible for a waxing or waning moon to be the first or last event.
+        # The first moon in a season is waning. The last is full.
+
+        # If the last event is the first waning moon, the season is that which follows
+        # the previous season.
+
+        return seasons
+
 
 class ExtendedSummary():
     """
@@ -205,19 +241,18 @@ class ExtendedSummary():
                 return season
             # TODO: Throw an exception if the season is not found.
 
-    def week_of_season(self):
+    def uposatha_of_season(self):
         numbers = re.findall("[0-9]+", self.summary)
         return int(numbers[1])
         # TODO: Throw exception if not 3 numbers.
 
-    def weeks_in_season(self):
+    def uposathas_in_season(self):
         numbers = re.findall("[0-9]+", self.summary)
         return int(numbers[2])
         # TODO: Throw exception if not 3 numbers.
 
 
 if __name__ == '__main__':
-    content = ""
     with open("mahanikaya.ical", "r") as f:
         content = f.read()
 
