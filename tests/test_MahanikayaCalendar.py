@@ -1,8 +1,8 @@
 from unittest import TestCase
 from datetime import date
 
-from forest_sangha_moons import MahanikayaCalendar, Event, Season
-from forest_sangha_moons.MahanikayaCalendar import SeasonMaker, ExtendedSummary
+from forest_sangha_moons import MahanikayaCalendar, Event
+from forest_sangha_moons.MahanikayaCalendar import ExtendedSummary, SeasonMaker
 
 class TestMahaNikayaCalendar(TestCase):
     def test_one_detail(self):
@@ -61,6 +61,32 @@ class TestSeasonMaker(TestCase):
             cal._process_details(moon)
         maker = SeasonMaker(cal.events)
         return maker.get_seasons()
+
+    def test_add_half_month(self):
+        half_detail = {"date": date(2010, 1, 8), "summary": "Waning Moon"}
+        uposatha_detail = {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"}
+
+        cal = MahanikayaCalendar()
+        cal._process_details(half_detail)
+        cal._process_details(uposatha_detail)
+        cal._complete_event()
+
+        self.assertEqual(2, len(cal.events))
+
+        half_event = cal.events[0]
+        uposatha_event = cal.events[1]
+
+        maker = SeasonMaker([])
+
+        maker._add_half_month(half_event, uposatha_event)
+
+        season = maker._next_season
+
+        self.assertEqual("Hemanta", season.season_name)
+        self.assertEqual(8, season.uposatha_count)
+        self.assertEqual(2, len(season.events))
+        self.assertEqual("Waning", season.events[0].moon_name)
+        self.assertEqual("New", season.events[1].moon_name)
 
     def test_seasons_first_lunar_cycle(self):
         # These are the first four VEVENTS from the real data.

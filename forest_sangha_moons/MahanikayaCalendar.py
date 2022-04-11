@@ -105,7 +105,6 @@ class Event:
         self.special_day = ""
         self.vassa_day = ""
 
-        self.season = None
         self.uposatha_of_season = 0
         self.uposatha_days = 0
 
@@ -179,39 +178,6 @@ class Event:
         return outstr
 
 
-class Season:
-    """
-    Representation of a season in the calendar including events
-    for that period.
-    """
-    def __init__(self, first_event: Event):
-        self.season_name = first_event.season
-        self.uposatha_count = first_event.uposatha_of_season
-        self.events = [first_event]
-
-
-class SeasonMaker:
-    """
-    Generates a list of Seasons from a list of Events.
-    """
-    def __init__(self, events):
-        self._events = events
-
-    def get_seasons(self):
-        seasons = []
-
-        # Only new and full moons have season info.
-        # Waning & waxing moons have the same season as the following moon.
-        # Full follows waxing, new follows waning.
-        # It is possible for a waxing or waning moon to be the first or last event.
-        # The first moon in a season is waning. The last is full.
-
-        # If the last event is the first waning moon, the season is that which follows
-        # the previous season.
-
-        return seasons
-
-
 class ExtendedSummary():
     """
     Parser for summary text where there is extra information.
@@ -250,6 +216,53 @@ class ExtendedSummary():
         numbers = re.findall("[0-9]+", self.summary)
         return int(numbers[2])
         # TODO: Throw exception if not 3 numbers.
+
+
+class Season:
+    """
+    Representation of a season in the calendar including events
+    for that period.
+    """
+    def __init__(self):
+        self.season_name = ""
+        self.uposatha_count = 0
+        self.events = []
+
+    def __str__(self):
+        event_count = len(self.events)
+        return "Season: {}, {} uposathas, {} events".format(self.season_name, self.uposatha_count, event_count)
+
+
+class SeasonMaker:
+    """
+    Generates a list of Seasons from a list of Events.
+    """
+    def __init__(self, events):
+        # This is pretty ugly - only first vassa day falls on a non-moon day.
+        self._events = [event for event in events if event.moon_name != "None"]
+        self._next_season = None
+
+    def _add_half_month(self, half_moon: Event, uposatha: Event):
+        """
+        Take two consecutive events and add them to a season.
+
+        As seasons end on a full moon we can be sure that these two events
+        belong to the same season. The half moon will not have extended
+        details so season must be determined from the following uposatha.
+
+        :param half_moon: A waxing or waning moon
+        :param uposatha: The full or new moon following the half moon.
+        """
+        season_info = uposatha._extended_summary
+
+        self._next_season = Season()
+        self._next_season.season_name = season_info.season_name()
+        self._next_season.uposatha_count = season_info.uposathas_in_season()
+        self._next_season.events.append(half_moon)
+        self._next_season.events.append(uposatha)
+
+    def get_seasons(self):
+        return []
 
 
 if __name__ == '__main__':
