@@ -135,6 +135,20 @@ class TestSeasonMaker(TestCase):
         self.assertEqual("Waning", season.events[0].moon_name)
         self.assertEqual("New", season.events[1].moon_name)
 
+    def test_season_has_changed(self):
+        first_uposatha_detail = {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"}
+
+        events = self.details_to_events([first_uposatha_detail])
+
+        self.assertEqual(1, len(events))
+
+        first_uposatha_event = events[0]
+
+        maker = SeasonMaker([])
+        maker._next_season.season_name = "Vassāna"
+        result = maker._season_has_changed(first_uposatha_event)
+
+        self.assertTrue(result)
 
 class TestEvent(TestCase):
     def test_set_moon_phase(self):

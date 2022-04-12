@@ -271,6 +271,7 @@ class SeasonMaker:
         """
 
         if not self._events:
+            # TODO Raise error.
             return
 
         if self._events[0].is_uposatha():
@@ -288,7 +289,7 @@ class SeasonMaker:
         """
         old = self._next_season.season_name
         new = uposatha._extended_summary.season_name()
-        return old == new
+        return old != new
 
     def _add_half_month(self, half_moon: Event, uposatha: Event):
         """
