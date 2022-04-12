@@ -304,15 +304,13 @@ class SeasonMaker:
         """
 
         if self._season_has_changed(uposatha):
-            self._events.append()
+            self._seasons.append(self._next_season)
             self._next_season = Season()
 
         season_info = uposatha._extended_summary
 
-        self._next_season = Season()
         self._next_season.season_name = season_info.season_name()
         self._next_season.uposatha_count = season_info.uposathas_in_season()
-
         self._next_season.events.append(half_moon)
         self._next_season.events.append(uposatha)
 
