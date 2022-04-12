@@ -161,6 +161,18 @@ class Event:
             self.uposatha_of_season = self._extended_summary.uposatha_of_season()
             self.uposatha_days = self._extended_summary.uposatha_days()
 
+    def is_uposatha(self):
+        return self.moon_name in ["Full", "New"]
+
+    def is_end_of_season(self):
+        if self.moon_name != "Full":
+            return False
+
+        season_info = self._extended_summary
+
+        if season_info.uposatha_of_season() == season_info.uposatha_of_season():
+            return True
+
     def __str__(self):
         """
         Pretty print the event.
@@ -178,7 +190,7 @@ class Event:
         return outstr
 
 
-class ExtendedSummary():
+class ExtendedSummary:
     """
     Parser for summary text where there is extra information.
 
@@ -236,11 +248,47 @@ class Season:
 class SeasonMaker:
     """
     Generates a list of Seasons from a list of Events.
+
     """
     def __init__(self, events):
         # This is pretty ugly - only first vassa day falls on a non-moon day.
         self._events = [event for event in events if event.moon_name != "None"]
-        self._next_season = None
+        self._trim_events()
+        self._next_season = Season()
+        self._seasons = []
+
+
+    def _trim_events(self):
+        """
+        The whole process is much easier if we delete the following:
+
+        The first event when it is an uposatha.
+        The last event if it is a not an uposatha.
+
+        Then all we need to do is process the pairs. It is pretty unlikely that
+        we'll want the details of those specific uposathas as they are long in the
+        past or future. Anyway, I'm gonna rewrite the whole thing anyway.
+        """
+
+        if not self._events:
+            return
+
+        if self._events[0].is_uposatha():
+            del self._events[0]
+
+        if not self._events[-1].is_uposatha():
+            del self._events[-1]
+
+    def _season_has_changed(self, uposatha):
+        """
+        Check if the next uposatha belongs to a different season.
+
+        :param uposatha: The next uposatha.
+        :return: True if uposatha belongs to different season.
+        """
+        old = self._next_season.season_name
+        new = uposatha._extended_summary.season_name()
+        return old == new
 
     def _add_half_month(self, half_moon: Event, uposatha: Event):
         """
@@ -253,16 +301,27 @@ class SeasonMaker:
         :param half_moon: A waxing or waning moon
         :param uposatha: The full or new moon following the half moon.
         """
+
+        if self._season_has_changed(uposatha):
+            self._events.append()
+            self._next_season = Season()
+
         season_info = uposatha._extended_summary
 
         self._next_season = Season()
         self._next_season.season_name = season_info.season_name()
         self._next_season.uposatha_count = season_info.uposathas_in_season()
+
         self._next_season.events.append(half_moon)
         self._next_season.events.append(uposatha)
 
     def get_seasons(self):
-        return []
+        """
+        Use the list of events to create a list of seasons.
+        :return: The list of seasons.
+        """
+
+        return self._seasons
 
 
 if __name__ == '__main__':

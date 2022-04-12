@@ -62,6 +62,53 @@ class TestSeasonMaker(TestCase):
         maker = SeasonMaker(cal.events)
         return maker.get_seasons()
 
+    def details_to_events(self, details):
+        cal = MahanikayaCalendar()
+        for moon in details:
+            cal._process_details(moon)
+        cal._complete_event()
+        return cal.events
+
+    def test_trim_events(self):
+        trim_half_from_front = {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"}
+        keep_half_moon = {"date": date(2010, 1, 23), "summary": "Waxing Moon"}
+        keep_uposatha = {"date": date(2010, 1, 30), "summary": "Full Moon - 15 day Hemanta 6/8"}
+        trim_half_from_end = {"date": date(2010, 2, 7), "summary": "Waning Moon"}
+
+        details = [trim_half_from_front, keep_half_moon, keep_uposatha, trim_half_from_end]
+
+        events_to_trim = self.details_to_events(details)
+
+        maker = SeasonMaker(events_to_trim)
+        maker._trim_events()
+
+        self.assertEqual(2, len(maker._events))
+
+        half_moon = maker._events[0]
+        uposatha = maker._events[1]
+
+        self.assertEqual("Waxing", half_moon.moon_name)
+        self.assertEqual("Full", uposatha.moon_name)
+
+    def test_nothing_to_trim(self):
+        half_moon = {"date": date(2010, 1, 23), "summary": "Waxing Moon"}
+        uposatha = {"date": date(2010, 1, 30), "summary": "Full Moon - 15 day Hemanta 6/8"}
+
+        details = [half_moon, uposatha]
+
+        events_no_trim = self.details_to_events(details)
+
+        maker = SeasonMaker(events_no_trim)
+        maker._trim_events()
+
+        self.assertEqual(2, len(maker._events))
+
+        half_moon = maker._events[0]
+        uposatha = maker._events[1]
+
+        self.assertEqual("Waxing", half_moon.moon_name)
+        self.assertEqual("Full", uposatha.moon_name)
+
     def test_add_half_month(self):
         half_detail = {"date": date(2010, 1, 8), "summary": "Waning Moon"}
         uposatha_detail = {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"}
@@ -87,71 +134,6 @@ class TestSeasonMaker(TestCase):
         self.assertEqual(2, len(season.events))
         self.assertEqual("Waning", season.events[0].moon_name)
         self.assertEqual("New", season.events[1].moon_name)
-
-    def test_seasons_first_lunar_cycle(self):
-        # These are the first four VEVENTS from the real data.
-        lunar_cycle = [
-            {"date": date(2010, 1, 8), "summary": "Waning Moon"},
-            {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"},
-            {"date": date(2010, 1, 23), "summary": "Waxing Moon"},
-            {"date": date(2010, 1, 30), "summary": "Full Moon - 15 day Hemanta 6/8"}
-        ]
-
-        seasons = self.details_to_seasons(lunar_cycle)
-
-        self.assertEqual(1, len(seasons), "There should be exactly one season")
-
-        season = season[0]
-
-        self.assertEqual("Hemanta", season.season_name)
-        self.assertEqual(8, season.uposatha_count)
-        self.assertEqual(4, len(season.events))
-
-        event = events[0]
-
-        self.assertEqual("Waxing", event.moon_name)
-        self.assertEqual("Hemanta", event.season.season_name)
-
-    def test_season_change(self):
-        season_change = [
-            # End of cold season
-            {"date": date(2010, 2, 28), "summary": "Full Moon - 15 day Hemanta 8/8"},
-            {"date": date(2022, 2, 28), "summary": "Māgha Pūjā"},
-            # Changing to hot season
-            {"date": date(2010, 3, 8), "summary": "Waning Moon"},
-            {"date": date(2010, 3, 15), "summary": "New Moon - 15 day Gimha 1/10"},
-        ]
-
-        seasons = self.details_to_seasons(season_change)
-
-        self.assertEqual(2, len(seasons), "There should be two seasons")
-
-        self.assertEqual("Hemanta", seasons[0].season_name, "First season is Hemanta")
-        self.assertEqual("Gimha", seasons[1].season_name, "Second season is Gimha")
-
-        self.assertEqual(2, len(seasons[0].events), "First season has two events")
-        self.assertEqual(2, len(seasons[1].events), "Second seasons has two events")
-
-
-    def test_trailing_waning_moon(self):
-        trailing_waning = [
-            # End of cold season
-            {"date": date(2010, 2, 28), "summary": "Full Moon - 15 day Hemanta 8/8"},
-            {"date": date(2022, 2, 28), "summary": "Māgha Pūjā"},
-            # A new hot season, but only a waning moon without an
-            # extended summary and no subsequent new moon.
-            {"date": date(2010, 3, 8), "summary": "Waning Moon"}
-        ]
-
-        seasons = self.details_to_seasons(trailing_waning)
-
-        self.assertEqual(2, len(seasons), "There should be two seasons")
-
-        self.assertEqual("Hemanta", seasons[0].season_name, "First season is Hemanta")
-        self.assertEqual("Gimha", seasons[1].season_name, "Second season is Gimha")
-
-        self.assertEqual(2, len(seasons[0].events), "First season has two events")
-        self.assertEqual(1, len(seasons[1].events), "Second seasons has one event")
 
 
 class TestEvent(TestCase):
@@ -234,6 +216,46 @@ class TestEvent(TestCase):
 
         season = event._extended_summary.season_name()
         self.assertEqual("Hemanta", season)
+
+    def test_is_uposatha(self):
+        waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
+        full_detail = {"date": date(2022, 3, 18), "summary": "Full Moon - 15 day Hemanta 6/8"}
+        waning_detail = {"date": date(2022, 3, 18), "summary": "Waning Moon"}
+        new_detail = {"date": date(2022, 3, 18), "summary": "New Moon - 15 day Hemanta 5/8"}
+
+        waxing_event = Event(waxing_detail)
+        full_event = Event(full_detail)
+        waning_event = Event(waning_detail)
+        new_event = Event(new_detail)
+
+        waxing_event.complete()
+        full_event.complete()
+        waning_event.complete()
+        new_event.complete()
+
+        self.assertFalse(waxing_event.is_uposatha())
+        self.assertFalse(waning_event.is_uposatha())
+
+        self.assertTrue(full_event.is_uposatha())
+        self.assertTrue(new_event.is_uposatha())
+
+    def test_is_end_of_season(self):
+        half_moon_detail = {"date": date(2010, 7, 19), "summary": "Waxing Moon"}
+        uposatha_end_detail = {"date": date(2010, 7, 26), "summary": "Full Moon - 15 day Gimha 10/10"}
+        uposatha_not_end_detail = {"date": date(2010, 8, 10), "summary": "New Moon - 15 day Vassāna 1/8"}
+
+        half_moon_event = Event(half_moon_detail)
+        uposatha_end_event = Event(uposatha_end_detail)
+        uposatha_not_end_event = Event(uposatha_not_end_detail)
+
+        half_moon_event.complete()
+        uposatha_end_event.complete()
+        uposatha_not_end_event.complete()
+
+        self.assertFalse(half_moon_event.is_end_of_season())
+        self.assertFalse(uposatha_not_end_event.is_end_of_season())
+        self.assertTrue(uposatha_end_event.is_end_of_season())
+
 
 class TestExtendedSummary(TestCase):
     def setUp(self):
