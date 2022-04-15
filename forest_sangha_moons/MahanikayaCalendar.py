@@ -185,7 +185,7 @@ class Event:
         if self.vassa_day:
             outstr += " : {}".format(self.vassa_day)
         if self._extended_summary:
-            outstr += " : Week {}".format(self.uposatha_of_season)
+            outstr += " : Uposatha # {}".format(self.uposatha_of_season)
             outstr += " : Uposatha Days {}".format(self.uposatha_days)
         return outstr
 
@@ -288,6 +288,10 @@ class SeasonMaker:
         :return: True if uposatha belongs to different season.
         """
         old = self._next_season.season_name
+
+        # First season not initialised.
+        if not old: return False
+
         new = uposatha._extended_summary.season_name()
         return old != new
 
@@ -317,11 +321,23 @@ class SeasonMaker:
     def get_seasons(self):
         """
         Use the list of events to create a list of seasons.
+
+        At this point _trim_events() has been called so we can
+        assume _events is a list of pairs of half_moons and uposathas.
+
         :return: The list of seasons.
         """
 
-        return self._seasons
+        event_iter = iter(self._events)
 
+        for half_moon_event in event_iter:
+            uposatha_event = next(event_iter)
+            self._add_half_month(half_moon_event, uposatha_event)
+
+        # Add the final season, complete or not.
+        self._seasons.append(self._next_season)
+
+        return self._seasons
 
 if __name__ == '__main__':
     with open("mahanikaya.ical", "r") as f:

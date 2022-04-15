@@ -150,6 +150,53 @@ class TestSeasonMaker(TestCase):
 
         self.assertTrue(result)
 
+    def test_season_not_initialised(self):
+        # For the very first event, we have a new Season without
+        # any content.
+        detail = {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"}
+        event = self.details_to_events([detail])[0]
+        maker = SeasonMaker([])
+        self.assertFalse(maker._season_has_changed(event))
+
+
+    def test_two_pairs_same_season(self):
+        details = [
+            {"date": date(2010, 11, 29), "summary": "Waning Moon"},
+            {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
+            {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
+            {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
+        ]
+
+        two_pairs_of_events = self.details_to_events(details)
+        self.assertEqual(4, len(two_pairs_of_events))
+
+        maker = SeasonMaker(two_pairs_of_events)
+        seasons = maker.get_seasons()
+
+        self.assertEqual(1, len(seasons))
+        self.assertEqual("Hemanta", seasons[0].season_name)
+
+
+    def test_two_pairs_different_season(self):
+        details = [
+            {"date": date(2010, 2, 21), "summary": "Waxing Moon"},
+            {"date": date(2010, 2, 28), "summary": "Full Moon - 15 day Hemanta 8/8"},
+            {"date": date(2010, 2, 28), "summary": "Māgha Pūjā"},
+            {"date": date(2010, 3, 8), "summary": "Waning Moon"},
+            {"date": date(2010, 3, 15), "summary": "New Moon - 15 day Gimha 1/10"}
+        ]
+
+        two_seasons = self.details_to_events(details)
+
+        maker = SeasonMaker(two_seasons)
+        seasons = maker.get_seasons()
+
+        self.assertEqual(2, len(seasons))
+
+        self.assertEqual("Hemanta", seasons[0].season_name)
+        self.assertEqual("Gimha", seasons[1].season_name)
+
+
 class TestEvent(TestCase):
     def test_set_moon_phase(self):
         waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
