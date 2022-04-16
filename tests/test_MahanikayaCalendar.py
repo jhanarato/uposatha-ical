@@ -98,6 +98,26 @@ class TestMahaNikayaCalendar(TestCase):
 
         self.assertEqual(date(2010, 12, 21), next_event.date)
 
+    def test_next_uposatha(self):
+        details = [
+            {"date": date(2010, 11, 29), "summary": "Waning Moon"},
+            {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
+            {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
+            {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
+        ]
+
+        cal = self.initialise_calendar(details)
+
+        cal.today = date(2010, 12, 5)
+        uposatha = cal.next_uposatha()
+        self.assertEqual(date(2010, 12, 6), uposatha.date)
+
+
+        cal.today = date(2010, 12, 6)
+        uposatha = cal.next_uposatha()
+        self.assertEqual(date(2010, 12, 21), uposatha.date)
+
+
     def test_is_uposatha(self):
         details = [
             {"date": date(2010, 11, 29), "summary": "Waning Moon"},

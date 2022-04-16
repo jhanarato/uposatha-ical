@@ -92,6 +92,13 @@ class MahanikayaCalendar:
         # TODO: Raise exception.
         return None
 
+    def next_uposatha(self):
+        for uposatha in self.get_uposathas():
+            if uposatha.date > self.today:
+                return uposatha
+        # TODO: Raise exception.
+        return None
+
     def today_is_uposatha(self):
         for uposatha in self.get_uposathas():
             if uposatha.date == self.today:
