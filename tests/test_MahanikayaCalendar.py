@@ -4,7 +4,35 @@ from datetime import date
 from forest_sangha_moons import MahanikayaCalendar, Event
 from forest_sangha_moons.MahanikayaCalendar import ExtendedSummary, SeasonMaker
 
+
+def details_to_seasons(details):
+    cal = MahanikayaCalendar()
+    for moon in details:
+        cal._process_details(moon)
+    maker = SeasonMaker(cal.events)
+    return maker.get_seasons()
+
+
+def details_to_events(details):
+    cal = MahanikayaCalendar()
+    for moon in details:
+        cal._process_details(moon)
+    cal._complete_event()
+    return cal.events
+
+
 class TestMahaNikayaCalendar(TestCase):
+
+    def initialise_calendar(self, details):
+        """ This is adapted from import_ical() """
+        cal = MahanikayaCalendar()
+        for detail in details:
+            cal._process_details(detail)
+        cal._complete_event()
+        season_maker = SeasonMaker(cal.events)
+        cal.seasons = season_maker.get_seasons()
+        return cal
+
     def test_one_detail(self):
         waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
 
@@ -54,20 +82,66 @@ class TestMahaNikayaCalendar(TestCase):
         cal._process_details(waxing_detail)
         self.assertTrue(cal._new_date(full_detail))
 
-class TestSeasonMaker(TestCase):
-    def details_to_seasons(self, details):
-        cal = MahanikayaCalendar()
-        for moon in details:
-            cal._process_details(moon)
-        maker = SeasonMaker(cal.events)
-        return maker.get_seasons()
+    def test_next_event(self):
+        details = [
+            {"date": date(2010, 11, 29), "summary": "Waning Moon"},
+            {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
+            {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
+            {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
+        ]
 
-    def details_to_events(self, details):
-        cal = MahanikayaCalendar()
-        for moon in details:
-            cal._process_details(moon)
-        cal._complete_event()
-        return cal.events
+        cal = self.initialise_calendar(details)
+
+        cal.today = date(2010, 12, 14)
+
+        next_event = cal.next_event()
+
+        self.assertEqual(date(2010, 12, 21), next_event.date)
+
+    def test_is_uposatha(self):
+        details = [
+            {"date": date(2010, 11, 29), "summary": "Waning Moon"},
+            {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
+            {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
+            {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
+        ]
+
+        cal = self.initialise_calendar(details)
+
+        # Normal usage
+        cal.today = date(2010, 11, 29)
+        self.assertFalse(cal.today_is_uposatha())
+        cal.today = date(2010, 12, 6)
+        self.assertTrue(cal.today_is_uposatha())
+        cal.today = date(2010, 12, 14)
+        self.assertFalse(cal.today_is_uposatha())
+        cal.today = date(2010, 12, 21)
+        self.assertTrue(cal.today_is_uposatha())
+
+        # Before range of events.
+        cal.today = date(2009, 1, 1)
+        self.assertFalse(cal.today_is_uposatha())
+
+        # After range of events.
+        cal.today = date(2011, 1, 1)
+        self.assertFalse(cal.today_is_uposatha())
+
+    def test_get_uposathas(self):
+        details = [
+            {"date": date(2010, 11, 29), "summary": "Waning Moon"},
+            {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
+            {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
+            {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
+        ]
+
+        cal = self.initialise_calendar(details)
+        uposathas = cal.get_uposathas()
+        self.assertEqual(2, len(uposathas))
+        self.assertEqual("New", uposathas[0].moon_name)
+        self.assertEqual("Full", uposathas[1].moon_name)
+
+class TestSeasonMaker(TestCase):
+
 
     def test_trim_events(self):
         trim_half_from_front = {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"}
@@ -77,7 +151,7 @@ class TestSeasonMaker(TestCase):
 
         details = [trim_half_from_front, keep_half_moon, keep_uposatha, trim_half_from_end]
 
-        events_to_trim = self.details_to_events(details)
+        events_to_trim = details_to_events(details)
 
         maker = SeasonMaker(events_to_trim)
         maker._trim_events()
@@ -96,7 +170,7 @@ class TestSeasonMaker(TestCase):
 
         details = [half_moon, uposatha]
 
-        events_no_trim = self.details_to_events(details)
+        events_no_trim = details_to_events(details)
 
         maker = SeasonMaker(events_no_trim)
         maker._trim_events()
@@ -138,7 +212,7 @@ class TestSeasonMaker(TestCase):
     def test_season_has_changed(self):
         first_uposatha_detail = {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"}
 
-        events = self.details_to_events([first_uposatha_detail])
+        events = details_to_events([first_uposatha_detail])
 
         self.assertEqual(1, len(events))
 
@@ -154,7 +228,7 @@ class TestSeasonMaker(TestCase):
         # For the very first event, we have a new Season without
         # any content.
         detail = {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"}
-        event = self.details_to_events([detail])[0]
+        event = details_to_events([detail])[0]
         maker = SeasonMaker([])
         self.assertFalse(maker._season_has_changed(event))
 
@@ -167,7 +241,7 @@ class TestSeasonMaker(TestCase):
             {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
         ]
 
-        two_pairs_of_events = self.details_to_events(details)
+        two_pairs_of_events = details_to_events(details)
         self.assertEqual(4, len(two_pairs_of_events))
 
         maker = SeasonMaker(two_pairs_of_events)
@@ -186,7 +260,7 @@ class TestSeasonMaker(TestCase):
             {"date": date(2010, 3, 15), "summary": "New Moon - 15 day Gimha 1/10"}
         ]
 
-        two_seasons = self.details_to_events(details)
+        two_seasons = details_to_events(details)
 
         maker = SeasonMaker(two_seasons)
         seasons = maker.get_seasons()

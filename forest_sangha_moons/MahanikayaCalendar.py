@@ -1,5 +1,6 @@
 import re
 import icalendar
+import datetime
 
 def extract_details(icalendar):
     """
@@ -26,6 +27,11 @@ class MahanikayaCalendar:
     Manages the importing of the Maha Nikaya lunar calendar
     """
     def __init__(self):
+
+        # Set the current day and store it. Having this as
+        # a class member makes testing easier.
+        self.today = datetime.date.today()
+
         self.events = []
         self.seasons = []
 
@@ -79,6 +85,21 @@ class MahanikayaCalendar:
         complete_event = self._incomplete_event
         self.events.append(complete_event)
 
+    def next_event(self):
+        for an_event in self.events:
+            if an_event.date > self.today:
+                return an_event
+        # TODO: Raise exception.
+        return None
+
+    def today_is_uposatha(self):
+        for uposatha in self.get_uposathas():
+            if uposatha.date == self.today:
+                return True
+        return False
+
+    def get_uposathas(self):
+        return [an_event for an_event in self.events if an_event.is_uposatha()]
 
 class Event:
     """
