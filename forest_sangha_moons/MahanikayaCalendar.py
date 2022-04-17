@@ -108,6 +108,10 @@ class MahanikayaCalendar:
     def get_uposathas(self):
         return [an_event for an_event in self.events if an_event.is_uposatha()]
 
+    def days_to_next_uposatha(self):
+        td = self.next_uposatha().date - self.today
+        return td.days
+
 class Event:
     """
     Represents an event in the Maha Nikaya calendar.
