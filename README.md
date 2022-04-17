@@ -33,4 +33,44 @@ changes.
 
 ## API
 
-There's no API at this point as I'm working on the importing first.
+### Import the Forest Sangha calendar
+
+```python
+import icalendar
+from forest_sangha_moons import MahanikayaCalendar
+
+with open("mahanikaya.ical", "r") as f:
+    content = f.read()
+
+ical = icalendar.Calendar.from_ical(content)
+calendar = MahanikayaCalendar()
+calendar.import_ical(ical)
+```
+
+### Use calendar functions
+
+```python
+robe_up = calendar.today_is_uposatha()
+days_left = calendar.days_to_next_uposatha()
+next_uposatha = calendar.next_uposatha()
+```
+
+### Get details of events
+
+```python
+print("The next uposatha is a {} day {} moon on {}".format(
+    next_uposatha.uposatha_days,
+    next_uposatha.moon_name,
+    next_uposatha.date.strftime("%d %b %y")
+))
+```
+
+### Get season details
+
+```python
+print("It is uposatha {} of {} of the {} season".format(
+    next_uposatha.uposatha_of_season,
+    next_uposatha.season.uposatha_count,
+    next_uposatha.season.season_name
+))
+```
