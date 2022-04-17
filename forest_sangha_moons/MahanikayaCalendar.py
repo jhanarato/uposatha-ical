@@ -345,6 +345,8 @@ class SeasonMaker:
         self._next_season.uposatha_count = season_info.uposathas_in_season()
         self._next_season.events.append(half_moon)
         self._next_season.events.append(uposatha)
+        half_moon.season = self._next_season
+        uposatha.season = self._next_season
 
     def get_seasons(self):
         """
