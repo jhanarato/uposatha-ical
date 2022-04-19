@@ -112,6 +112,29 @@ class MahanikayaCalendar:
         td = self.next_uposatha().date - self.today
         return td.days
 
+    def events_in_year(self, year):
+        return [ e for e in self.events if e.date.year == year]
+
+    def uposathas_in_year(self, year):
+        in_year = []
+        for event in self.events:
+            if event.is_uposatha():
+                if event.date.year == year:
+                    in_year.append(event)
+
+        return in_year
+
+    def seasons_in_year(self, year):
+        seasons_in_year = []
+        for season in self.seasons:
+            for an_event in season.events:
+                if an_event.date.year == year:
+                    seasons_in_year.append(season)
+                    break
+
+        return seasons_in_year
+
+
 class Event:
     """
     Represents an event in the Maha Nikaya calendar.
@@ -145,6 +168,7 @@ class Event:
         self.vassa_days = ["First day of Vassa", "Last day of Vassa"]
 
         self._extended_summary = None
+        self.season = None
 
     def add_details(self, details):
         """
@@ -271,6 +295,9 @@ class Season:
         self.season_name = ""
         self.uposatha_count = 0
         self.events = []
+
+    def end_date(self):
+        return self.events[-1].date
 
     def __str__(self):
         event_count = len(self.events)

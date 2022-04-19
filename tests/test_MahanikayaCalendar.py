@@ -9,6 +9,7 @@ def details_to_seasons(details):
     cal = MahanikayaCalendar()
     for moon in details:
         cal._process_details(moon)
+    cal._complete_event()
     maker = SeasonMaker(cal.events)
     return maker.get_seasons()
 
@@ -161,8 +162,6 @@ class TestMahaNikayaCalendar(TestCase):
         self.assertEqual("Full", uposathas[1].moon_name)
 
 class TestSeasonMaker(TestCase):
-
-
     def test_trim_events(self):
         trim_half_from_front = {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"}
         keep_half_moon = {"date": date(2010, 1, 23), "summary": "Waxing Moon"}
@@ -433,3 +432,15 @@ class TestExtendedSummary(TestCase):
     def test_uposatha_in_season(self):
         self.assertEqual(8, self.full.uposathas_in_season())
         self.assertEqual(10, self.new.uposathas_in_season())
+
+class TestSeason(TestCase):
+    def test_end_date(self):
+        details = [
+            {"date": date(2010, 11, 29), "summary": "Waning Moon"},
+            {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
+            {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
+            {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
+        ]
+
+        season = details_to_seasons(details)[0]
+        self.assertEqual(date(2010, 12, 21), season.end_date())
