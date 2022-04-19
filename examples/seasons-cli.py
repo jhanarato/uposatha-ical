@@ -12,4 +12,5 @@ calendar.import_ical(ical)
 year = datetime.date.today().year
 
 for season in calendar.seasons_in_year(year):
-    print(season.end_date())
+    date_str = season.end_date().strftime("%d-%m-%y")
+    print("{} {}".format(date_str, season.english_name()))

@@ -1,7 +1,7 @@
 from unittest import TestCase
 from datetime import date
 
-from forest_sangha_moons import MahanikayaCalendar, Event
+from forest_sangha_moons import MahanikayaCalendar, Event, Season
 from forest_sangha_moons.MahanikayaCalendar import ExtendedSummary, SeasonMaker
 
 
@@ -444,3 +444,12 @@ class TestSeason(TestCase):
 
         season = details_to_seasons(details)[0]
         self.assertEqual(date(2010, 12, 21), season.end_date())
+
+    def test_english_name(self):
+        season = Season()
+        season.season_name = "Hemanta"
+        self.assertEqual("Cold", season.english_name())
+        season.season_name = "Gimha"
+        self.assertEqual("Hot", season.english_name())
+        season.season_name = "Vassāna"
+        self.assertEqual("Rainy", season.english_name())

@@ -299,6 +299,14 @@ class Season:
     def end_date(self):
         return self.events[-1].date
 
+    def english_name(self):
+        translation = {
+            "Hemanta": "Cold",
+            "Gimha": "Hot",
+            "Vassāna": "Rainy"
+        }
+        return translation[self.season_name]
+
     def __str__(self):
         event_count = len(self.events)
         return "Season: {}, {} uposathas, {} events".format(self.season_name, self.uposatha_count, event_count)
