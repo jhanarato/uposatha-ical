@@ -1,8 +1,16 @@
 # My minimum viable product.
+import pathlib
 import icalendar
 from forest_sangha_moons import MahanikayaCalendar
 
-with open("mahanikaya.ical", "r") as f:
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", "--file", dest="myFile", help="Open specified file")
+args = parser.parse_args()
+myFile = args.myFile
+
+with open(myFile, "r") as f:
     content = f.read()
 
 ical = icalendar.Calendar.from_ical(content)
