@@ -113,7 +113,10 @@ class MahanikayaCalendar:
         return td.days
 
     def events_in_year(self, year):
-        return [ e for e in self.events if e.date.year == year]
+        return [e for e in self.events if e.date.year == year]
+
+    def special_days_in_year(self, year):
+        return [e for e in self.events_in_year(year) if e.special_day]
 
     def uposathas_in_year(self, year):
         in_year = []
@@ -127,11 +130,8 @@ class MahanikayaCalendar:
     def seasons_in_year(self, year):
         seasons_in_year = []
         for season in self.seasons:
-            for an_event in season.events:
-                if an_event.date.year == year:
-                    seasons_in_year.append(season)
-                    break
-
+            if season.end_date().year == year:
+                seasons_in_year.append(season)
         return seasons_in_year
 
 
