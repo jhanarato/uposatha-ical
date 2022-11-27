@@ -1,7 +1,7 @@
 # My minimum viable product.
 import pathlib
 import icalendar
-from forest_sangha_moons import MahanikayaCalendar
+from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
 import argparse
 
