@@ -1,8 +1,7 @@
 from unittest import TestCase
 from datetime import date
 
-from forest_sangha_moons import MahanikayaCalendar, Event, Season
-from forest_sangha_moons.MahanikayaCalendar import ExtendedSummary, SeasonMaker
+from forest_sangha_moons.MahanikayaCalendar import Event, Season, ExtendedSummary, SeasonMaker, MahanikayaCalendar
 
 
 def details_to_seasons(details):
