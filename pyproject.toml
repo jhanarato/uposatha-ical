@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "forest_sangha_moons"
+version = "0.1.1"
+authors = [
+    {name = "Ajahn Jhanarato", email = "jhanrato@gmail.com"},
+]
+description = "An API for the Maha Nikaya lunar calendar"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/jhanarato/uposatha-ical"
+"Bug Tracker" = "https://github.com/jhanarato/uposatha-ical/issues"
