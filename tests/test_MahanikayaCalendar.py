@@ -1,24 +1,11 @@
 from unittest import TestCase
 from datetime import date
 
+from conftest import details_to_seasons, details_to_events
 from forest_sangha_moons.MahanikayaCalendar import Event, Season, ExtendedSummary, SeasonMaker, MahanikayaCalendar
 
-
-def details_to_seasons(details):
-    cal = MahanikayaCalendar()
-    for moon in details:
-        cal._process_details(moon)
-    cal._complete_event()
-    maker = SeasonMaker(cal.events)
-    return maker.get_seasons()
-
-
-def details_to_events(details):
-    cal = MahanikayaCalendar()
-    for moon in details:
-        cal._process_details(moon)
-    cal._complete_event()
-    return cal.events
+def test_x(x):
+    assert x == "x"
 
 
 class TestMahaNikayaCalendar(TestCase):
