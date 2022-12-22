@@ -1,7 +1,7 @@
 from unittest import TestCase
 from datetime import date
 
-from conftest import details_to_seasons, details_to_events
+from conftest import details_to_seasons, details_to_events, initialise_calendar
 from forest_sangha_moons.MahanikayaCalendar import Event, Season, ExtendedSummary, SeasonMaker, MahanikayaCalendar
 
 def test_x(x):
@@ -9,16 +9,6 @@ def test_x(x):
 
 
 class TestMahaNikayaCalendar(TestCase):
-
-    def initialise_calendar(self, details):
-        """ This is adapted from import_ical() """
-        cal = MahanikayaCalendar()
-        for detail in details:
-            cal._process_details(detail)
-        cal._complete_event()
-        season_maker = SeasonMaker(cal.events)
-        cal.seasons = season_maker.get_seasons()
-        return cal
 
     def test_one_detail(self):
         waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
@@ -77,7 +67,7 @@ class TestMahaNikayaCalendar(TestCase):
             {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
         ]
 
-        cal = self.initialise_calendar(details)
+        cal = initialise_calendar(details)
 
         cal.today = date(2010, 12, 14)
 
@@ -93,7 +83,7 @@ class TestMahaNikayaCalendar(TestCase):
             {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
         ]
 
-        cal = self.initialise_calendar(details)
+        cal = initialise_calendar(details)
 
         cal.today = date(2010, 12, 5)
         uposatha = cal.next_uposatha()
@@ -113,7 +103,7 @@ class TestMahaNikayaCalendar(TestCase):
             {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
         ]
 
-        cal = self.initialise_calendar(details)
+        cal = initialise_calendar(details)
 
         # Normal usage
         cal.today = date(2010, 11, 29)
@@ -141,7 +131,7 @@ class TestMahaNikayaCalendar(TestCase):
             {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
         ]
 
-        cal = self.initialise_calendar(details)
+        cal = initialise_calendar(details)
         uposathas = cal.get_uposathas()
         self.assertEqual(2, len(uposathas))
         self.assertEqual("New", uposathas[0].moon_name)
