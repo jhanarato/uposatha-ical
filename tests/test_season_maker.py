@@ -23,6 +23,25 @@ def test_trim_events():
     assert half_moon.moon_name == "Waxing"
     assert uposatha.moon_name == "Full"
 
+def test_nothing_to_trim():
+    half_moon = {"date": date(2010, 1, 23), "summary": "Waxing Moon"}
+    uposatha = {"date": date(2010, 1, 30), "summary": "Full Moon - 15 day Hemanta 6/8"}
+
+    details = [half_moon, uposatha]
+
+    events_no_trim = details_to_events(details)
+
+    maker = SeasonMaker(events_no_trim)
+    maker._trim_events()
+
+    assert len(maker._events) == 2
+
+    half_moon = maker._events[0]
+    uposatha = maker._events[1]
+
+    assert half_moon.moon_name == "Waxing"
+    assert uposatha.moon_name == "Full"
+
 def test_add_half_month():
     half_detail = {"date": date(2010, 1, 8), "summary": "Waning Moon"}
     uposatha_detail = {"date": date(2010, 1, 15), "summary": "New Moon - 15 day Hemanta 5/8"}
