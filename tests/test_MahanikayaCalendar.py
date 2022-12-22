@@ -4,9 +4,6 @@ from datetime import date
 from conftest import details_to_seasons, details_to_events, initialise_calendar
 from forest_sangha_moons.MahanikayaCalendar import Event, Season, ExtendedSummary, SeasonMaker, MahanikayaCalendar
 
-def test_x(x):
-    assert x == "x"
-
 
 class TestMahaNikayaCalendar(TestCase):
 
