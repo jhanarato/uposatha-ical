@@ -1,8 +1,9 @@
+from datetime import date
+
 import pytest
 
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar, SeasonMaker
 
-# TODO Make this a fixture
 def details_to_seasons(details):
     cal = MahanikayaCalendar()
     for moon in details:
@@ -11,7 +12,6 @@ def details_to_seasons(details):
     maker = SeasonMaker(cal.events)
     return maker.get_seasons()
 
-# TODO Make this a fixture
 def details_to_events(details):
     cal = MahanikayaCalendar()
     for moon in details:
@@ -19,7 +19,6 @@ def details_to_events(details):
     cal._complete_event()
     return cal.events
 
-# TODO Make this a fixture
 def initialise_calendar(details):
     """ This is adapted from import_ical() """
     cal = MahanikayaCalendar()
@@ -29,3 +28,11 @@ def initialise_calendar(details):
     season_maker = SeasonMaker(cal.events)
     cal.seasons = season_maker.get_seasons()
     return cal
+
+def first_month_of_cold_season():
+    return [
+        {"date": date(2010, 11, 29), "summary": "Waning Moon"},
+        {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
+        {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
+        {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
+    ]

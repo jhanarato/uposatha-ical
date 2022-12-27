@@ -2,7 +2,8 @@ from datetime import date
 
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
-from conftest import initialise_calendar
+from conftest import initialise_calendar, first_month_of_cold_season
+
 
 def test_one_detail():
     waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
@@ -56,14 +57,7 @@ def test_date_has_changed():
     assert cal._new_date(full_detail)
 
 def test_next_event():
-    # TODO Find duplicates and create fixture
-    details = [
-        {"date": date(2010, 11, 29), "summary": "Waning Moon"},
-        {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
-        {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
-        {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
-    ]
-
+    details = first_month_of_cold_season()
     cal = initialise_calendar(details)
 
     cal.today = date(2010, 12, 14)
@@ -72,14 +66,9 @@ def test_next_event():
 
     assert next_event.date == date(2010, 12, 21)
 
-def test_next_uposatha():
-    details = [
-        {"date": date(2010, 11, 29), "summary": "Waning Moon"},
-        {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
-        {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
-        {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
-    ]
 
+def test_next_uposatha():
+    details = first_month_of_cold_season()
     cal = initialise_calendar(details)
 
     cal.today = date(2010, 12, 5)
@@ -92,13 +81,7 @@ def test_next_uposatha():
     assert uposatha.date == date(2010, 12, 21)
 
 def test_is_uposatha():
-    details = [
-        {"date": date(2010, 11, 29), "summary": "Waning Moon"},
-        {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
-        {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
-        {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
-    ]
-
+    details = first_month_of_cold_season()
     cal = initialise_calendar(details)
 
     # Normal usage
@@ -123,15 +106,10 @@ def test_is_uposatha():
     assert not cal.today_is_uposatha()
 
 def test_get_uposathas():
-    details = [
-        {"date": date(2010, 11, 29), "summary": "Waning Moon"},
-        {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
-        {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
-        {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
-    ]
-
+    details = first_month_of_cold_season()
     cal = initialise_calendar(details)
     uposathas = cal.get_uposathas()
+
     assert len(uposathas) == 2
     assert uposathas[0].moon_name == "New"
     assert uposathas[1].moon_name == "Full"
