@@ -56,6 +56,7 @@ def test_date_has_changed():
     assert cal._new_date(full_detail)
 
 def test_next_event():
+    # TODO Find duplicates and create fixture
     details = [
         {"date": date(2010, 11, 29), "summary": "Waning Moon"},
         {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
@@ -85,7 +86,7 @@ def test_next_uposatha():
     uposatha = cal.next_uposatha()
     assert uposatha.date == date(2010, 12, 6)
 
-
+    # TODO split into two tests
     cal.today = date(2010, 12, 6)
     uposatha = cal.next_uposatha()
     assert uposatha.date == date(2010, 12, 21)
