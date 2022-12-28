@@ -2,7 +2,7 @@ from datetime import date
 
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
-from conftest import initialise_calendar, first_month_of_cold_season
+from conftest import initialise_calendar, first_month_of_cold_season_details
 
 
 def test_one_detail():
@@ -56,59 +56,49 @@ def test_date_has_changed():
 
     assert cal._new_date(full_detail)
 
-def test_next_event():
-    details = first_month_of_cold_season()
-    cal = initialise_calendar(details)
-
-    cal.today = date(2010, 12, 14)
-
-    next_event = cal.next_event()
+def test_next_event(one_month_of_events):
+    one_month_of_events.today = date(2010, 12, 14)
+    next_event = one_month_of_events.next_event()
 
     assert next_event.date == date(2010, 12, 21)
 
 
-def test_next_uposatha():
-    details = first_month_of_cold_season()
-    cal = initialise_calendar(details)
-
-    cal.today = date(2010, 12, 5)
-    uposatha = cal.next_uposatha()
+def test_next_uposatha(one_month_of_events):
+    one_month_of_events.today = date(2010, 12, 5)
+    uposatha = one_month_of_events.next_uposatha()
     assert uposatha.date == date(2010, 12, 6)
 
     # TODO split into two tests
-    cal.today = date(2010, 12, 6)
-    uposatha = cal.next_uposatha()
+    one_month_of_events.today = date(2010, 12, 6)
+    uposatha = one_month_of_events.next_uposatha()
     assert uposatha.date == date(2010, 12, 21)
 
-def test_is_uposatha():
-    details = first_month_of_cold_season()
-    cal = initialise_calendar(details)
-
+def test_is_uposatha(one_month_of_events):
     # Normal usage
-    cal.today = date(2010, 11, 29)
-    assert not cal.today_is_uposatha()
+    one_month_of_events.today = date(2010, 11, 29)
+    assert not one_month_of_events.today_is_uposatha()
 
-    cal.today = date(2010, 12, 6)
-    assert cal.today_is_uposatha()
+    one_month_of_events.today = date(2010, 12, 6)
+    assert one_month_of_events.today_is_uposatha()
 
-    cal.today = date(2010, 12, 14)
-    assert not cal.today_is_uposatha()
+    one_month_of_events.today = date(2010, 12, 14)
+    assert not one_month_of_events.today_is_uposatha()
 
-    cal.today = date(2010, 12, 21)
-    assert cal.today_is_uposatha()
+    one_month_of_events.today = date(2010, 12, 21)
+    assert one_month_of_events.today_is_uposatha()
 
     # Before range of events.
-    cal.today = date(2009, 1, 1)
-    assert not cal.today_is_uposatha()
+    one_month_of_events.today = date(2009, 1, 1)
+    assert not one_month_of_events.today_is_uposatha()
 
     # After range of events.
-    cal.today = date(2011, 1, 1)
-    assert not cal.today_is_uposatha()
+    one_month_of_events.today = date(2011, 1, 1)
+    assert not one_month_of_events.today_is_uposatha()
 
-def test_get_uposathas():
-    details = first_month_of_cold_season()
-    cal = initialise_calendar(details)
-    uposathas = cal.get_uposathas()
+def test_get_uposathas(one_month_of_events):
+    details = first_month_of_cold_season_details()
+    one_month_of_events = initialise_calendar(details)
+    uposathas = one_month_of_events.get_uposathas()
 
     assert len(uposathas) == 2
     assert uposathas[0].moon_name == "New"

@@ -1,10 +1,10 @@
 from datetime import date
 
 from forest_sangha_moons.MahanikayaCalendar import Season
-from conftest import details_to_seasons, first_month_of_cold_season
+from conftest import details_to_seasons, first_month_of_cold_season_details
 
 def test_end_date():
-    details = first_month_of_cold_season()
+    details = first_month_of_cold_season_details()
     season = details_to_seasons(details)[0]
     assert season.end_date() == date(2010, 12, 21)
 

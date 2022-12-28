@@ -29,10 +29,16 @@ def initialise_calendar(details):
     cal.seasons = season_maker.get_seasons()
     return cal
 
-def first_month_of_cold_season():
+def first_month_of_cold_season_details():
     return [
         {"date": date(2010, 11, 29), "summary": "Waning Moon"},
         {"date": date(2010, 12, 6), "summary": "New Moon - 15 day Hemanta 1/8"},
         {"date": date(2010, 12, 14), "summary": "Waxing Moon"},
         {"date": date(2010, 12, 21), "summary": "Full Moon - 15 day Hemanta 2/8"}
     ]
+
+@pytest.fixture
+def one_month_of_events():
+    return initialise_calendar(
+        first_month_of_cold_season_details()
+    )
