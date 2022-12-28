@@ -3,6 +3,7 @@ from datetime import date
 import pytest
 
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar, SeasonMaker
+from forest_sangha_moons.MahanikayaCalendar import Season, Event
 
 def details_to_seasons(details):
     cal = MahanikayaCalendar()
@@ -44,4 +45,32 @@ def one_month_of_events(first_month_of_cold_season_details):
 
 @pytest.fixture
 def rains_calendar():
-    return MahanikayaCalendar()
+    calendar = MahanikayaCalendar()
+    calendar._process_details(
+        {"date": date(2022, 3, 18), "summary": "First day of Vassa"}
+    )
+    calendar._complete_event()
+    return calendar
+
+@pytest.fixture
+def uposatha_lengths():
+    lengths = []
+    for number in range(1, 9):
+        if number == 3 or number == 7:
+            lengths.append(14)
+        else:
+            lengths.append(15)
+
+    return lengths
+
+@pytest.fixture
+def rainy_events(uposatha_lengths):
+    return None
+
+@pytest.fixture
+def rainy_season(rainy_events):
+    rainy = Season()
+    rainy.season_name = "Vassāna"
+    rainy.uposatha_count = 8
+
+    return rainy
