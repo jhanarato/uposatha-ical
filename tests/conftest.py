@@ -29,6 +29,7 @@ def initialise_calendar(details):
     cal.seasons = season_maker.get_seasons()
     return cal
 
+@pytest.fixture
 def first_month_of_cold_season_details():
     return [
         {"date": date(2010, 11, 29), "summary": "Waning Moon"},
@@ -38,7 +39,5 @@ def first_month_of_cold_season_details():
     ]
 
 @pytest.fixture
-def one_month_of_events():
-    return initialise_calendar(
-        first_month_of_cold_season_details()
-    )
+def one_month_of_events(first_month_of_cold_season_details):
+    return initialise_calendar(first_month_of_cold_season_details)
