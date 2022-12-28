@@ -41,3 +41,7 @@ def first_month_of_cold_season_details():
 @pytest.fixture
 def one_month_of_events(first_month_of_cold_season_details):
     return initialise_calendar(first_month_of_cold_season_details)
+
+@pytest.fixture
+def rains_calendar():
+    return MahanikayaCalendar()

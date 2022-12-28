@@ -134,6 +134,9 @@ class MahanikayaCalendar:
                 seasons_in_year.append(season)
         return seasons_in_year
 
+    def start_of_rains(self):
+        return datetime.date(2022, 7, 14)
+
 
 class Event:
     """
