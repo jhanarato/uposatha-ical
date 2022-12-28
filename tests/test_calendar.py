@@ -2,8 +2,6 @@ from datetime import date
 
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
-from conftest import initialise_calendar, first_month_of_cold_season_details
-
 
 def test_one_detail():
     waxing_detail = {"date": date(2022, 3, 18), "summary": "Waxing Moon"}
@@ -96,8 +94,6 @@ def test_is_uposatha(one_month_of_events):
     assert not one_month_of_events.today_is_uposatha()
 
 def test_get_uposathas(one_month_of_events):
-    details = first_month_of_cold_season_details()
-    one_month_of_events = initialise_calendar(details)
     uposathas = one_month_of_events.get_uposathas()
 
     assert len(uposathas) == 2
