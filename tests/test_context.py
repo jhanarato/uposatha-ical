@@ -12,6 +12,6 @@ import pytest
                              (date(2011, 1, 1), False)
                           ])
 def test_today_is_uposatha(today, is_uposatha, one_month_of_events):
-
     one_month_of_events.today = today
     assert one_month_of_events.today_is_uposatha() == is_uposatha
+
