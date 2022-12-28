@@ -15,3 +15,11 @@ def test_today_is_uposatha(today, is_uposatha, one_month_of_events):
     one_month_of_events.today = today
     assert one_month_of_events.today_is_uposatha() == is_uposatha
 
+@pytest.mark.parametrize("today,days_to_next",
+                         [
+                             (date(2010, 12, 5), 1),
+                             (date(2010, 12, 6), 15)
+                          ])
+def test_days_to_next_uposatha(today, days_to_next, one_month_of_events):
+    one_month_of_events.today = today
+    assert one_month_of_events.days_to_next_uposatha() == days_to_next
