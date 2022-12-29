@@ -6,7 +6,7 @@ from generate import uposatha_lengths, generate_event, generate_season_with_one_
 from generate import generate_uposatha_dates
 
 def test_uposatha_lengths():
-    assert uposatha_lengths() == [15, 15, 14, 15, 15, 15, 14, 15]
+    assert list(uposatha_lengths()) == [15, 15, 14, 15, 15, 15, 14, 15]
 
 def test_generate_event():
     event = generate_event(on_date=date(2022, 12, 29))
