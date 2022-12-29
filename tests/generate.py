@@ -1,3 +1,6 @@
+from datetime import date
+from forest_sangha_moons.MahanikayaCalendar import Event
+
 def uposatha_lengths():
     lengths = []
     for number in range(1, 9):
@@ -7,3 +10,8 @@ def uposatha_lengths():
             lengths.append(15)
 
     return lengths
+
+def generate_event():
+    details = {"date": date(2022, 12, 29), "summary": ""}
+    event = Event(details)
+    return event
