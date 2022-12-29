@@ -11,7 +11,7 @@ def uposatha_lengths():
 
     return lengths
 
-def generate_event():
-    details = {"date": date(2022, 12, 29), "summary": ""}
+def generate_event(on_date):
+    details = {"date": on_date, "summary": ""}
     event = Event(details)
     return event
