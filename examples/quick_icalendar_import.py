@@ -9,3 +9,4 @@ def import_calendar():
     ical = icalendar.Calendar.from_ical(content)
     calendar = MahanikayaCalendar()
     calendar.import_ical(ical)
+    return calendar
