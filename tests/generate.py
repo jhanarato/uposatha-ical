@@ -29,3 +29,11 @@ def generate_uposatha_dates(day_before_season):
     for length in lengths:
         next_date += timedelta(days=length)
         yield next_date
+
+def generate_events_for_season(day_before_season):
+    events = []
+    for event_date in generate_uposatha_dates(day_before_season):
+        event = generate_event(event_date)
+        events.append(event)
+
+    return events

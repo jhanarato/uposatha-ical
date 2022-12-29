@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 
 from generate import uposatha_lengths, generate_event, generate_season_with_one_event
-from generate import generate_uposatha_dates
+from generate import generate_uposatha_dates, generate_events_for_season
 
 def test_uposatha_lengths():
     assert list(uposatha_lengths()) == [15, 15, 14, 15, 15, 15, 14, 15]
@@ -41,3 +41,6 @@ def test_generate_eight_uposathas(uposatha_dates):
 def test_generate_correct_uposatha_dates(position, date_at_position, uposatha_dates):
     assert uposatha_dates[position] == date_at_position
 
+def test_generate_events_for_season():
+    events = generate_events_for_season(day_before_season=date(2022, 12, 29))
+    assert len(events) == 8
