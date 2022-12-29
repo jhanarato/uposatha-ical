@@ -17,9 +17,9 @@ def test_generate_season_with_one_event():
     assert len(season.events) == 1
 
 def test_generate_first_uposatha_date():
-    dates = generate_uposatha_dates(day_before_season=date(2022, 12, 29))
+    dates = list(generate_uposatha_dates(day_before_season=date(2022, 12, 29)))
     assert dates[0] == date(2023, 1, 13)
 
 def test_generate_eight_uposathas():
-    dates = generate_uposatha_dates(day_before_season=date(2022, 12, 29))
+    dates = list(generate_uposatha_dates(day_before_season=date(2022, 12, 29)))
     assert len(dates) == 8

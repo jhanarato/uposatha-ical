@@ -21,11 +21,9 @@ def generate_season_with_one_event(event_date):
     return rainy
 
 def generate_uposatha_dates(day_before_season):
-    dates = []
-    lengths = list(uposatha_lengths())
-    next_date = day_before_season + timedelta(days=lengths[0])
-    dates.append(next_date)
-    for length in lengths[1:]:
+    lengths = iter(uposatha_lengths())
+    next_date = day_before_season + timedelta(days=next(lengths))
+    yield next_date
+    for length in lengths:
         next_date += timedelta(days=length)
-        dates.append(next_date)
-    return dates
+        yield next_date
