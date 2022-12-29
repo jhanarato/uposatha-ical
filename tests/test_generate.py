@@ -1,6 +1,6 @@
 from datetime import date
 
-from generate import uposatha_lengths, generate_event
+from generate import uposatha_lengths, generate_event, generate_season_with_one_event
 
 def test_uposatha_lengths():
     assert uposatha_lengths() == [15, 15, 14, 15, 15, 15, 14, 15]
@@ -8,3 +8,7 @@ def test_uposatha_lengths():
 def test_generate_event():
     event = generate_event(date(2022, 12, 29))
     assert event.date == date(2022, 12, 29)
+
+def test_generate_season_with_one_event():
+    season = generate_season_with_one_event(event_date=date(2022, 12, 29))
+    assert len(season.events) == 1

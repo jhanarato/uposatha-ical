@@ -1,5 +1,5 @@
 from datetime import date
-from forest_sangha_moons.MahanikayaCalendar import Event
+from forest_sangha_moons.MahanikayaCalendar import Season, Event
 
 def uposatha_lengths():
     lengths = []
@@ -15,3 +15,9 @@ def generate_event(on_date):
     details = {"date": on_date, "summary": ""}
     event = Event(details)
     return event
+
+def generate_season_with_one_event(event_date):
+    rainy = Season()
+    rainy.season_name = "Vassāna"
+    rainy.events = [generate_event(event_date)]
+    return rainy
