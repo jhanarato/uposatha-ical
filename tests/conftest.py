@@ -53,22 +53,7 @@ def rains_calendar():
     return calendar
 
 @pytest.fixture
-def uposatha_lengths():
-    lengths = []
-    for number in range(1, 9):
-        if number == 3 or number == 7:
-            lengths.append(14)
-        else:
-            lengths.append(15)
-
-    return lengths
-
-@pytest.fixture
-def rainy_events(uposatha_lengths):
-    return None
-
-@pytest.fixture
-def rainy_season(rainy_events):
+def rainy_season():
     rainy = Season()
     rainy.season_name = "Vassāna"
     rainy.uposatha_count = 8
