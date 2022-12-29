@@ -44,3 +44,7 @@ def test_generate_correct_uposatha_dates(position, date_at_position, uposatha_da
 def test_generate_events_for_season():
     events = generate_events_for_season(day_before_season=date(2022, 12, 29))
     assert len(events) == 8
+
+def test_last_day_of_events_generated():
+    event = generate_events_for_season(day_before_season=date(2022, 12, 29))[7]
+    assert event.date == date(2023, 4, 26)
