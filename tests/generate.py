@@ -2,8 +2,9 @@ from datetime import date, timedelta
 from forest_sangha_moons.MahanikayaCalendar import Season, Event
 
 def uposatha_lengths():
+    fourteen_days = [3, 7]
     for number in range(1, 9):
-        if number == 3 or number == 7:
+        if number in fourteen_days:
             yield 14
         else:
             yield 15
