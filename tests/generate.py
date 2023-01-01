@@ -43,3 +43,7 @@ def generate_season(day_before_season, season_name):
     season.season_name = season_name
     season.events = generate_events_for_season(day_before_season)
     return season
+
+def generate_season_after_season(previous_season, new_season_name):
+    last_event = previous_season.events[-1]
+    return generate_season(last_event.date, new_season_name)

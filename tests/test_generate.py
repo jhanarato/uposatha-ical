@@ -1,10 +1,11 @@
+import datetime
 from datetime import date
 
 import pytest
 
 from generate import uposatha_lengths, generate_event, generate_season_with_one_event
 from generate import generate_uposatha_dates, generate_events_for_season
-from generate import generate_season
+from generate import generate_season, generate_season_after_season
 
 def test_uposatha_lengths():
     assert list(uposatha_lengths()) == [15, 15, 14, 15, 15, 15, 14, 15]
@@ -54,3 +55,12 @@ def test_generate_season():
     season = generate_season(date(2010, 7, 26), "Vassāna")
     assert season.season_name == "Vassāna"
     assert len(season.events) == 8
+
+def test_generate_season_after_season():
+    season = generate_season(date(2010, 7, 26), "Vassāna")
+    next_season = generate_season_after_season(season, "Gimha")
+    assert next_season.season_name == "Gimha"
+    last_event = season.events[-1]
+    first_event = next_season.events[0]
+    difference = (first_event.date - last_event.date).days
+    assert difference == 15
