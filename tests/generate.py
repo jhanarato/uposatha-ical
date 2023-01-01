@@ -37,3 +37,9 @@ def generate_events_for_season(day_before_season):
         events.append(event)
 
     return events
+
+def generate_season(day_before_season, season_name):
+    season = Season()
+    season.season_name = season_name
+    season.events = generate_events_for_season(day_before_season)
+    return season

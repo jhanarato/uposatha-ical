@@ -4,6 +4,7 @@ import pytest
 
 from generate import uposatha_lengths, generate_event, generate_season_with_one_event
 from generate import generate_uposatha_dates, generate_events_for_season
+from generate import generate_season
 
 def test_uposatha_lengths():
     assert list(uposatha_lengths()) == [15, 15, 14, 15, 15, 15, 14, 15]
@@ -48,3 +49,8 @@ def test_generate_events_for_season():
 def test_last_day_of_events_generated():
     event = generate_events_for_season(day_before_season=date(2022, 12, 29))[7]
     assert event.date == date(2023, 4, 26)
+
+def test_generate_season():
+    season = generate_season(date(2010, 7, 26), "Vassāna")
+    assert season.season_name == "Vassāna"
+    assert len(season.events) == 8
