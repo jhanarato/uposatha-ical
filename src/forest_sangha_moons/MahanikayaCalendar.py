@@ -135,8 +135,14 @@ class MahanikayaCalendar:
         return seasons_in_year
 
     def start_of_rains(self):
-        return datetime.date(2022, 7, 14)
+        for season in self.seasons:
+            if season.season_name == "Gimha":
+                if season.events[0].date.year == self.today.year:
+                    return season.end_date() + datetime.timedelta(1)
+        return None
 
+    def seasons_this_year(self):
+        pass
 
 class Event:
     """

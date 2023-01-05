@@ -5,6 +5,8 @@ import pytest
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar, SeasonMaker
 from forest_sangha_moons.MahanikayaCalendar import Season, Event
 
+from generate import generate_calendar
+
 def details_to_seasons(details):
     cal = MahanikayaCalendar()
     for moon in details:
@@ -59,3 +61,7 @@ def rainy_season():
     rainy.uposatha_count = 8
 
     return rainy
+
+@pytest.fixture
+def calendar_2010_10_24():
+    return generate_calendar(date(2010, 11, 21), "Hemanta", 9)

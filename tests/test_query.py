@@ -24,6 +24,6 @@ def test_days_to_next_uposatha(today, days_to_next, one_month_of_events):
     one_month_of_events.today = today
     assert one_month_of_events.days_to_next_uposatha() == days_to_next
 
-def test_first_day_of_next_rains_this_year(rains_calendar):
-    rains_calendar.today = date(2022, 1, 1)
-    assert rains_calendar.start_of_rains() == date(2022, 7, 14)
+def test_first_day_of_next_rains_this_year(calendar_2010_10_24):
+    calendar_2010_10_24.today = date(2011, 1, 1)
+    assert calendar_2010_10_24.start_of_rains() == date(2011, 7, 16)
