@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from forest_sangha_moons.MahanikayaCalendar import Season, Event
+from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar, Season, Event
 
 def uposatha_lengths():
     fourteen_days = [3, 7]
@@ -47,3 +47,23 @@ def generate_season(day_before_season, season_name):
 def generate_season_after_season(previous_season, new_season_name):
     last_event = previous_season.events[-1]
     return generate_season(last_event.date, new_season_name)
+
+def generate_calendar(day_before_calendar, first_season_name, number_of_seasons):
+    season_after = {"Gimha": "Vassāna",
+                    "Vassāna": "Hemanta",
+                    "Hemanta": "Gimha"}
+
+    calendar = MahanikayaCalendar()
+
+    season = generate_season(day_before_calendar, first_season_name)
+    calendar.seasons.append(season)
+
+    for _ in range(1, number_of_seasons):
+        season = generate_season(
+            season.end_date(),
+            season_after[season.season_name]
+        )
+
+        calendar.seasons.append(season)
+
+    return calendar

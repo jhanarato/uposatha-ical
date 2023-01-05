@@ -6,6 +6,7 @@ import pytest
 from generate import uposatha_lengths, generate_event, generate_season_with_one_event
 from generate import generate_uposatha_dates, generate_events_for_season
 from generate import generate_season, generate_season_after_season
+from generate import generate_calendar
 
 def test_uposatha_lengths():
     assert list(uposatha_lengths()) == [15, 15, 14, 15, 15, 15, 14, 15]
@@ -64,3 +65,11 @@ def test_generate_season_after_season():
     first_event = next_season.events[0]
     difference = (first_event.date - last_event.date).days
     assert difference == 15
+
+def test_generate_calendar_with_one_season():
+    calendar = generate_calendar(date(2022, 4, 1), "Gimha", 1)
+    assert len(calendar.seasons) == 1
+
+def test_generate_calendar_with_three_seasons():
+    calendar = generate_calendar(date(2022, 4, 1), "Gimha", 3)
+    assert len(calendar.seasons) == 3
