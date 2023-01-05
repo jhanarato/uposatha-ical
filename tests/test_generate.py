@@ -57,10 +57,15 @@ def test_generate_season():
     assert season.season_name == "Vassāna"
     assert len(season.events) == 8
 
-def test_generate_season_after_season():
-    season = generate_season(date(2010, 7, 26), "Vassāna")
-    next_season = generate_season_after_season(season, "Gimha")
-    assert next_season.season_name == "Gimha"
+def test_generate_season_name():
+    season = generate_season(date(2010, 7, 26), "Gimha")
+    next_season = generate_season_after_season(season)
+    assert next_season.season_name == "Vassāna"
+
+def test_generate_season_date():
+    season = generate_season(date(2010, 7, 26), "Gimha")
+    next_season = generate_season_after_season(season)
+
     last_event = season.events[-1]
     first_event = next_season.events[0]
     difference = (first_event.date - last_event.date).days
@@ -73,3 +78,8 @@ def test_generate_calendar_with_one_season():
 def test_generate_calendar_with_three_seasons():
     calendar = generate_calendar(date(2022, 4, 1), "Gimha", 3)
     assert len(calendar.seasons) == 3
+
+def test_generate_seasons_names():
+    calendar = generate_calendar(date(2022, 4, 1), "Gimha", 3)
+    names = [season.season_name for season in calendar.seasons]
+    assert names == ["Gimha", "Vassāna", "Hemanta"]

@@ -44,26 +44,24 @@ def generate_season(day_before_season, season_name):
     season.events = generate_events_for_season(day_before_season)
     return season
 
-def generate_season_after_season(previous_season, new_season_name):
-    last_event = previous_season.events[-1]
-    return generate_season(last_event.date, new_season_name)
-
-def generate_calendar(day_before_calendar, first_season_name, number_of_seasons):
-    season_after = {"Gimha": "Vassāna",
+def generate_season_after_season(season):
+    name_after = {"Gimha": "Vassāna",
                     "Vassāna": "Hemanta",
                     "Hemanta": "Gimha"}
 
+    day_before_season = season.events[-1].date
+    name = name_after[season.season_name]
+
+    return generate_season(day_before_season, name)
+
+def generate_calendar(day_before_calendar, first_season_name, number_of_seasons):
     calendar = MahanikayaCalendar()
 
     season = generate_season(day_before_calendar, first_season_name)
     calendar.seasons.append(season)
 
     for _ in range(1, number_of_seasons):
-        season = generate_season(
-            season.end_date(),
-            season_after[season.season_name]
-        )
-
+        season = generate_season_after_season(season)
         calendar.seasons.append(season)
 
     return calendar
