@@ -30,8 +30,11 @@ def generate_season_with_one_event(event_date):
     rainy.events = [generate_event(event_date)]
     return rainy
 
-def generate_uposatha_dates(day_before_season):
+def generate_uposatha_dates(day_before_season, long_hot=False):
     lengths = iter(uposatha_lengths())
+    if long_hot:
+        lengths = add_month(lengths)
+
     next_date = day_before_season + timedelta(days=next(lengths))
 
     yield next_date
@@ -40,18 +43,19 @@ def generate_uposatha_dates(day_before_season):
         next_date += timedelta(days=length)
         yield next_date
 
-def generate_events_for_season(day_before_season):
+def generate_events_for_season(day_before_season, long_hot=False):
     events = []
-    for event_date in generate_uposatha_dates(day_before_season):
+    for event_date in generate_uposatha_dates(day_before_season, long_hot):
         event = generate_event(event_date)
         events.append(event)
 
     return events
 
 def generate_season(day_before_season, season_name):
+    long_hot = is_long(day_before_season.year, season_name)
     season = Season()
     season.season_name = season_name
-    season.events = generate_events_for_season(day_before_season)
+    season.events = generate_events_for_season(day_before_season, long_hot)
     return season
 
 def generate_season_after_season(season):

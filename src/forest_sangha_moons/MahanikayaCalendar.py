@@ -141,8 +141,13 @@ class MahanikayaCalendar:
                     return season.end_date() + datetime.timedelta(1)
         return None
 
-    def seasons_this_year(self):
-        pass
+    def long_hot_seasons(self):
+        years = []
+        for event_ in self.events:
+            if event_.uposatha_of_season == 10:
+                years.append(event_.date.year)
+
+        return years
 
 class Event:
     """
