@@ -6,7 +6,7 @@ import pytest
 from generate import uposatha_lengths, generate_event, generate_season_with_one_event
 from generate import generate_uposatha_dates, generate_events_for_season
 from generate import generate_season, generate_season_after_season
-from generate import generate_calendar
+from generate import generate_calendar, add_month, is_long
 
 def test_uposatha_lengths():
     assert list(uposatha_lengths()) == [15, 15, 14, 15, 15, 15, 14, 15]
@@ -83,3 +83,18 @@ def test_generate_seasons_names():
     calendar = generate_calendar(date(2022, 4, 1), "Gimha", 3)
     names = [season.season_name for season in calendar.seasons]
     assert names == ["Gimha", "Vassāna", "Hemanta"]
+
+def test_add_month_to_uposatha_lengths():
+    with_extra_month = list(add_month(uposatha_lengths()))
+    assert with_extra_month == [15, 15, 14, 15, 15, 15, 14, 15, 15, 15]
+
+@pytest.mark.parametrize(
+    "year,name,long",
+    [
+        (2012, "Gimha", True),
+        (2011, "Gimha", False),
+        (2012, "Vassāna", False)
+    ]
+)
+def test_is_long_hot_season(year, name, long):
+    assert is_long(2012, "Gimha")

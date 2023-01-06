@@ -9,6 +9,16 @@ def uposatha_lengths():
         else:
             yield 15
 
+def add_month(lengths):
+    for length in lengths:
+        yield length
+    yield 15
+    yield 15
+
+def is_long(year, season_name):
+    long_years = [2012]
+    return season_name == "Gimha" and year in long_years
+
 def generate_event(on_date):
     details = {"date": on_date, "summary": ""}
     event = Event(details)
