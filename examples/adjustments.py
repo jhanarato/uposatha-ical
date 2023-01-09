@@ -30,3 +30,18 @@ def add_date_before(seasons, date_before_first_season):
         date_before = season.uposathas[-1].date
         next_season.date_before = date_before
         season = next_season
+
+def duration_sequence(season):
+    dates = [ season.date_before ]
+    for uposatha in season.uposathas:
+        dates.append(uposatha.date)
+
+    durations = []
+
+    for i, _ in enumerate(dates):
+        if i > 0:
+            durations.append(
+                days_between(dates[i - 1], dates[i])
+            )
+
+    return durations
