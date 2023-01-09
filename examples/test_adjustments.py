@@ -49,7 +49,14 @@ def test_add_date_before(seasons_list, season_index, date_before):
     date_before = seasons_list[season_index].date_before
     assert date_before == date_before
 
-def test_season_to_duration_sequence(seasons_list):
-    first_season = seasons_list[0]
+@pytest.mark.parametrize(
+    "season_index,expected_sequence",
+    [
+        (0, long_seq),
+        (1, short_seq)
+    ]
+)
+def test_season_to_duration_sequence(seasons_list, season_index, expected_sequence):
+    first_season = seasons_list[season_index]
     sequence = duration_sequence(first_season)
-    assert sequence == long_seq
+    assert sequence == expected_sequence
