@@ -1,12 +1,26 @@
 from datetime import date, timedelta
 import pytest
+import icalendar
+from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
-from quick_icalendar_import import import_calendar
 from adjustments import *
 
 @pytest.fixture(scope="module")
-def imported_calendar():
-    return import_calendar(ical_file="../mahanikaya.ical")
+def ical_content():
+    with open("../mahanikaya.ical", "r") as f:
+        content = f.read()
+
+    return content
+
+@pytest.fixture(scope="module")
+def parsed_ical(ical_content):
+    return icalendar.Calendar.from_ical(ical_content)
+
+@pytest.fixture
+def imported_calendar(parsed_ical):
+    calendar = MahanikayaCalendar()
+    calendar.import_ical(parsed_ical)
+    return calendar
 
 @pytest.fixture
 def seasons_list(imported_calendar):
@@ -57,6 +71,7 @@ def test_add_date_before(seasons_list, season_index, date_before):
     ]
 )
 def test_season_to_duration_sequence(seasons_list, season_index, expected_sequence):
+    add_date_before(seasons_list, date(2010, 2, 28))
     first_season = seasons_list[season_index]
     sequence = duration_sequence(first_season)
     assert sequence == expected_sequence
