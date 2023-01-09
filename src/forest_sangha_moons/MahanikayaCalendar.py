@@ -321,6 +321,10 @@ class Season:
         }
         return translation[self.season_name]
 
+    @property
+    def uposathas(self):
+        return [event for event in self.events if event.moon_name in ["Full", "New"]]
+
     def __str__(self):
         event_count = len(self.events)
         return "Season: {}, {} uposathas, {} events".format(self.season_name, self.uposatha_count, event_count)
