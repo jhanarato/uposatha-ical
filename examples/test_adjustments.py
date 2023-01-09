@@ -75,3 +75,7 @@ def test_season_to_duration_sequence(seasons_list, season_index, expected_sequen
     first_season = seasons_list[season_index]
     sequence = durations_sequence(first_season)
     assert sequence == expected_sequence
+
+def test_seasons_either_8_or_10(seasons_list):
+    for season in seasons_list:
+        assert season.uposatha_count in [8, 10]
