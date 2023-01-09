@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from itertools import pairwise
 import pytest
 
 from quick_icalendar_import import import_calendar
@@ -31,17 +32,12 @@ def add_date_before(seasons, date_before_first_season):
         next_season.date_before = date_before
         season = next_season
 
-def duration_sequence(season):
-    dates = [ season.date_before ]
-    for uposatha in season.uposathas:
-        dates.append(uposatha.date)
-
+def durations_sequence(season):
+    dates = [season.date_before ] + [uposatha.date for uposatha in season.uposathas]
     durations = []
-
-    for i, _ in enumerate(dates):
-        if i > 0:
-            durations.append(
-                days_between(dates[i - 1], dates[i])
-            )
+    for pair_of_dates in pairwise(dates):
+        durations.append(
+            days_between(pair_of_dates[0], pair_of_dates[1])
+        )
 
     return durations

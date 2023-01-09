@@ -73,5 +73,5 @@ def test_add_date_before(seasons_list, season_index, date_before):
 def test_season_to_duration_sequence(seasons_list, season_index, expected_sequence):
     add_date_before(seasons_list, date(2010, 2, 28))
     first_season = seasons_list[season_index]
-    sequence = duration_sequence(first_season)
+    sequence = durations_sequence(first_season)
     assert sequence == expected_sequence
