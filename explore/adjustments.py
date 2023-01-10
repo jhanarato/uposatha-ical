@@ -1,6 +1,9 @@
 from datetime import date, timedelta
 from itertools import pairwise
+
 import pytest
+
+from quick_icalendar_import import import_calendar
 
 long_seq = [15, 15, 14, 15, 15, 15, 14, 15, 15, 15]
 short_seq = [15, 15, 14, 15, 15, 15, 14, 15]
