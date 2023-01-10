@@ -1,16 +1,5 @@
-from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
-
 from adjustments import *
 
-@pytest.fixture
-def imported_calendar(parsed_ical):
-    calendar = MahanikayaCalendar()
-    calendar.import_ical(parsed_ical)
-    return calendar
-
-@pytest.fixture
-def seasons_list(imported_calendar):
-    return get_seasons(imported_calendar)
 
 @pytest.mark.parametrize(
     "season_index,date_before",
