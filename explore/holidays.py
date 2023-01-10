@@ -42,10 +42,13 @@ def all_holidays(seasons : List[Season]) -> List[Holiday]:
 def filter_by_name(holidays : List[Holiday], name) -> List[Holiday]:
     return [holiday for holiday in holidays if holiday.holiday_name == name]
 
+def holiday_dates(holidays : List[Holiday]) -> List[date]:
+    return [holiday.holiday_date for holiday in holidays]
+
 def display(holiday : Holiday):
     print(f"{holiday.holiday_date.isoformat()} {holiday.holiday_name} {holiday.season_name} {holiday.uposatha}")
 
-def main():
+def show_selected_holiday_info():
     calendar = import_calendar(ical_file="../mahanikaya.ical")
     seasons = get_seasons(calendar)
     for holiday_name in [VESAK_DAY, MAGHA_PUJA]:
@@ -55,4 +58,4 @@ def main():
             display(holiday)
 
 if __name__ == "__main__":
-    main()
+    show_selected_holiday_info()

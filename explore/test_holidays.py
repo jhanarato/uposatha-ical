@@ -24,6 +24,14 @@ def vesak_days(holidays):
 def magha_pujas(holidays):
     return filter_by_name(holidays, MAGHA_PUJA)
 
+@pytest.fixture
+def vesak_dates(vesak_days):
+    return holiday_dates(vesak_days)
+
+@pytest.fixture
+def magha_dates(magha_pujas):
+    return holiday_dates(magha_pujas)
+
 def test_asalhas(asalha_pujas):
     for holiday in asalha_pujas:
         assert holiday.uposatha in [8, 10]
@@ -41,3 +49,9 @@ def test_vesak_in_may_or_june(vesak_days):
 def test_magha_in_feb_or_mar(magha_pujas):
     for holiday in magha_pujas:
         assert holiday.holiday_date.month in [2, 3]
+
+def test_vesak_dates(vesak_dates):
+    assert len(vesak_dates) == 21
+
+def test_magha_dates(magha_dates):
+    assert len(magha_dates) == 20
