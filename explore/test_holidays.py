@@ -14,4 +14,7 @@ def test_asalha(holidays):
         assert holiday.season_name == HOT_SEASON
 
 def test_pavarana(holidays):
-    assert 0
+    pavaranas = filter_by_name(holidays, PAVARANA_DAY)
+    for holiday in pavaranas:
+        assert holiday.uposatha == 6
+        assert holiday.season_name == RAINY_SEASON
