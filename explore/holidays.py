@@ -57,5 +57,15 @@ def show_selected_holiday_info():
         for holiday in holidays:
             display(holiday)
 
+def show_dates(holiday_name):
+    calendar = import_calendar(ical_file="../mahanikaya.ical")
+    seasons = get_seasons(calendar)
+    holidays = filter_by_name(all_holidays(seasons), holiday_name)
+    dates = holiday_dates(holidays)
+    print(f"{holiday_name} dates:")
+    for holiday_date in dates:
+        print(holiday_date)
+
 if __name__ == "__main__":
-    show_selected_holiday_info()
+    show_dates(VESAK_DAY)
+    show_dates(MAGHA_PUJA)
