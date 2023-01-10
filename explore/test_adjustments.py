@@ -1,20 +1,6 @@
-from datetime import date, timedelta
-import pytest
-import icalendar
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
 from adjustments import *
-
-@pytest.fixture(scope="module")
-def ical_content():
-    with open("../mahanikaya.ical", "r") as f:
-        content = f.read()
-
-    return content
-
-@pytest.fixture(scope="module")
-def parsed_ical(ical_content):
-    return icalendar.Calendar.from_ical(ical_content)
 
 @pytest.fixture
 def imported_calendar(parsed_ical):
