@@ -1,3 +1,4 @@
+import datetime
 from typing import NamedTuple, List
 from datetime import date
 from forest_sangha_moons.MahanikayaCalendar import Season
@@ -17,7 +18,7 @@ class Holiday(NamedTuple):
     holiday_name : str
     season_name : str
     uposatha : int
-    holiday_date : str
+    holiday_date : date
 
 def holidays_in(season : Season) -> List[Holiday]:
     holidays = []
@@ -27,7 +28,7 @@ def holidays_in(season : Season) -> List[Holiday]:
             holiday_name=event.special_day,
             season_name=season.season_name,
             uposatha=event.uposatha_of_season,
-            holiday_date=event.date.isoformat()
+            holiday_date=event.date
         )
         holidays.append(holiday)
     return holidays
@@ -42,7 +43,7 @@ def filter_by_name(holidays : List[Holiday], name) -> List[Holiday]:
     return [holiday for holiday in holidays if holiday.holiday_name == name]
 
 def display(holiday : Holiday):
-    print(f"{holiday.holiday_date} {holiday.holiday_name} {holiday.season_name} {holiday.uposatha}")
+    print(f"{holiday.holiday_date.isoformat()} {holiday.holiday_name} {holiday.season_name} {holiday.uposatha}")
 
 def main():
     calendar = import_calendar(ical_file="../mahanikaya.ical")

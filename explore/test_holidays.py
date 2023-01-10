@@ -36,10 +36,8 @@ def test_pavaranas(pavarana_days):
 
 def test_vesak_in_may_or_june(vesak_days):
     for holiday in vesak_days:
-        date_ = date.fromisoformat(holiday.holiday_date)
-        assert date_.month in [5, 6]
+        assert holiday.holiday_date.month in [5, 6]
 
 def test_magha_in_feb_or_mar(magha_pujas):
     for holiday in magha_pujas:
-        date_ = date.fromisoformat(holiday.holiday_date)
-        assert date_.month in [2, 3]
+        assert holiday.holiday_date.month in [2, 3]
