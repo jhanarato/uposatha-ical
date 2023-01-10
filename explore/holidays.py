@@ -4,6 +4,11 @@ from forest_sangha_moons.MahanikayaCalendar import Season
 from adjustments import get_seasons
 from quick_icalendar_import import import_calendar
 
+VESAK_DAY = "Visākha Pūjā"
+ASALHA_PUJA = "Āsāḷha Pūjā"
+MAGHA_PUJA = "Māgha Pūjā"
+PAVARANA_DAY = "Pavāraṇā Day"
+
 class Holiday(NamedTuple):
     holiday_name : str
     season_name : str
@@ -35,7 +40,7 @@ def display(holiday : Holiday):
 def main():
     calendar = import_calendar(ical_file="../mahanikaya.ical")
     seasons = get_seasons(calendar)
-    vesak_days = [holiday for holiday in all_holidays(seasons) if holiday.holiday_name == "Visākha Pūjā"]
+    vesak_days = [holiday for holiday in all_holidays(seasons) if holiday.holiday_name == VESAK_DAY]
     for holiday in vesak_days:
         display(holiday)
 
