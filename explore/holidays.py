@@ -47,11 +47,11 @@ def display(holiday : Holiday):
 def main():
     calendar = import_calendar(ical_file="../mahanikaya.ical")
     seasons = get_seasons(calendar)
-    holidays = all_holidays(seasons)
-    vesak_days = filter_by_name(holidays, VESAK_DAY)
-
-    for holiday in vesak_days:
-        display(holiday)
+    for holiday_name in [VESAK_DAY, MAGHA_PUJA]:
+        holidays = filter_by_name(all_holidays(seasons), holiday_name)
+        print(holiday_name)
+        for holiday in holidays:
+            display(holiday)
 
 if __name__ == "__main__":
     main()
