@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 
 from holidays import *
@@ -15,6 +17,14 @@ def test_asalha(holidays):
 
 def test_pavarana(holidays):
     pavaranas = filter_by_name(holidays, PAVARANA_DAY)
+
     for holiday in pavaranas:
         assert holiday.uposatha == 6
         assert holiday.season_name == RAINY_SEASON
+
+def test_vesak_always_in_may_or_june(holidays):
+    vesak_days = filter_by_name(holidays, VESAK_DAY)
+
+    for holiday in vesak_days:
+        date_ = date.fromisoformat(holiday.holiday_date)
+        assert date_.month in [5, 6]
