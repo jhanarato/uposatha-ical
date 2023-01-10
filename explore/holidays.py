@@ -9,6 +9,10 @@ ASALHA_PUJA = "Āsāḷha Pūjā"
 MAGHA_PUJA = "Māgha Pūjā"
 PAVARANA_DAY = "Pavāraṇā Day"
 
+COLD_SEASON = "Hemanta"
+HOT_SEASON = "Gimha"
+RAINY_SEASON = "Vassāna"
+
 class Holiday(NamedTuple):
     holiday_name : str
     season_name : str
