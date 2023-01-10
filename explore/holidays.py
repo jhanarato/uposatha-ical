@@ -34,13 +34,18 @@ def all_holidays(seasons : List[Season]) -> List[Holiday]:
         holidays += holidays_in(season)
     return holidays
 
+def filter_by_name(holidays : List[Holiday], name) -> List[Holiday]:
+    return [holiday for holiday in holidays if holiday.holiday_name == name]
+
 def display(holiday : Holiday):
     print(f"{holiday.holiday_date} {holiday.holiday_name} {holiday.season_name} {holiday.uposatha}")
 
 def main():
     calendar = import_calendar(ical_file="../mahanikaya.ical")
     seasons = get_seasons(calendar)
-    vesak_days = [holiday for holiday in all_holidays(seasons) if holiday.holiday_name == VESAK_DAY]
+    holidays = all_holidays(seasons)
+    vesak_days = filter_by_name(holidays, VESAK_DAY)
+
     for holiday in vesak_days:
         display(holiday)
 
