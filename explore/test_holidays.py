@@ -55,3 +55,21 @@ def test_vesak_dates(vesak_dates):
 
 def test_magha_dates(magha_dates):
     assert len(magha_dates) == 20
+
+def test_vesak_is_fourth_in_normal_hot_season(seasons_list):
+    hot_seasons = [season for season in seasons_list if season.season_name == HOT_SEASON]
+    short_hot_seasons = [season for season in hot_seasons if season.uposatha_count == 8]
+
+    for season in short_hot_seasons:
+        for event in season.events:
+            if event.special_day == VESAK_DAY:
+                assert event.uposatha_of_season == 4
+
+def test_vesak_is_sixth_in_long_hot_season(seasons_list):
+    hot_seasons = [season for season in seasons_list if season.season_name == HOT_SEASON]
+    long_hot_seasons = [season for season in hot_seasons if season.uposatha_count == 10]
+
+    for season in long_hot_seasons:
+        for event in season.events:
+            if event.special_day == VESAK_DAY:
+                assert event.uposatha_of_season == 6
