@@ -45,6 +45,15 @@ def filter_by_name(holidays : List[Holiday], name) -> List[Holiday]:
 def holiday_dates(holidays : List[Holiday]) -> List[date]:
     return [holiday.holiday_date for holiday in holidays]
 
+def season_is_long(season : Season) -> bool:
+    return season.uposatha_count == 10
+
+def cold_season_magha_puja_uposatha(cold_season : Season) -> int:
+    for event in cold_season.events:
+        if event.special_day == MAGHA_PUJA:
+            return event.uposatha_of_season
+    raise RuntimeError("Not a cold day with a magha puja")
+
 def display(holiday : Holiday):
     print(f"{holiday.holiday_date.isoformat()} {holiday.holiday_name} {holiday.season_name} {holiday.uposatha}")
 

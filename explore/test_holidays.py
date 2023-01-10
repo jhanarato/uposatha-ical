@@ -1,4 +1,5 @@
 from datetime import date
+from itertools import pairwise
 
 import pytest
 
@@ -73,3 +74,14 @@ def test_vesak_is_sixth_in_long_hot_season(seasons_list):
         for event in season.events:
             if event.special_day == VESAK_DAY:
                 assert event.uposatha_of_season == 6
+
+def test_magha_puja_uposatha_in_season(seasons_list):
+    for season_pair in pairwise(seasons_list):
+        if season_pair[0].season_name == COLD_SEASON:
+            magha_puja_uposatha_in_season = cold_season_magha_puja_uposatha(season_pair[0])
+            next_hot_season_is_long = season_is_long(season_pair[1])
+
+            if next_hot_season_is_long:
+                assert magha_puja_uposatha_in_season == 8
+            else:
+                assert magha_puja_uposatha_in_season == 6
