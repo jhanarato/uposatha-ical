@@ -1,5 +1,5 @@
 from typing import NamedTuple, List
-
+from datetime import date
 from forest_sangha_moons.MahanikayaCalendar import Season
 from adjustments import get_seasons
 from quick_icalendar_import import import_calendar
@@ -7,7 +7,8 @@ from quick_icalendar_import import import_calendar
 class Holiday(NamedTuple):
     holiday_name : str
     season_name : str
-    year : int
+    uposatha : int
+    holiday_date : str
 
 def holidays_in(season : Season) -> List[Holiday]:
     holidays = []
@@ -16,7 +17,8 @@ def holidays_in(season : Season) -> List[Holiday]:
         holiday = Holiday(
             holiday_name=event.special_day,
             season_name=season.season_name,
-            year=season.events[-1].date.year
+            uposatha=event.uposatha_of_season,
+            holiday_date=event.date.isoformat()
         )
         holidays.append(holiday)
     return holidays
@@ -27,14 +29,14 @@ def all_holidays(seasons : List[Season]) -> List[Holiday]:
         holidays += holidays_in(season)
     return holidays
 
-
 def display(holiday : Holiday):
-    print(f"{holiday.year} {holiday.season_name} {holiday.holiday_name}")
+    print(f"{holiday.holiday_date} {holiday.holiday_name} {holiday.season_name} {holiday.uposatha}")
 
 def main():
     calendar = import_calendar(ical_file="../mahanikaya.ical")
     seasons = get_seasons(calendar)
-    for holiday in all_holidays(seasons):
+    vesak_days = [holiday for holiday in all_holidays(seasons) if holiday.holiday_name == "Visākha Pūjā"]
+    for holiday in vesak_days:
         display(holiday)
 
 if __name__ == "__main__":
