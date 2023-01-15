@@ -33,13 +33,7 @@ def add_date_before(seasons, date_before_first_season):
 
 def durations_sequence(season):
     dates = [season.date_before ] + [uposatha.date for uposatha in season.uposathas]
-    durations = []
-    for pair_of_dates in pairwise(dates):
-        durations.append(
-            days_between(pair_of_dates[0], pair_of_dates[1])
-        )
-
-    return durations
+    return [days_between(start, end) for start, end in pairwise(dates)]
 
 def adjusted_seasons(seasons_list):
     add_date_before(seasons_list, date(2010, 2, 28))
