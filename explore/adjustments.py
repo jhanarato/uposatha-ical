@@ -1,18 +1,12 @@
-from datetime import date, timedelta
+from datetime import date
 from itertools import pairwise
 
-import pytest
-
+from explore.calendar_extensions import get_seasons, add_date_before
 from quick_icalendar_import import import_calendar
 
 long_seq = [15, 15, 14, 15, 15, 15, 14, 15, 15, 15]
 short_seq = [15, 15, 14, 15, 15, 15, 14, 15]
 
-def start_date(calendar):
-    return calendar.seasons[0].events[-1].date
-
-def get_seasons(calendar):
-    return calendar.seasons[1:-1]
 
 def season_is_long(season):
     return season.uposatha_count == 10
@@ -20,16 +14,6 @@ def season_is_long(season):
 def days_between(first, last):
     delta = last - first
     return delta.days
-
-def add_date_before(seasons, date_before_first_season):
-    season_iter = iter(seasons)
-    season = next(season_iter)
-    season.date_before = date_before_first_season
-
-    for next_season in season_iter:
-        date_before = season.uposathas[-1].date
-        next_season.date_before = date_before
-        season = next_season
 
 def durations_sequence(season):
     dates = [season.date_before ] + [uposatha.date for uposatha in season.uposathas]

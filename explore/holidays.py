@@ -2,7 +2,7 @@ import datetime
 from typing import NamedTuple, List
 from datetime import date
 from forest_sangha_moons.MahanikayaCalendar import Season
-from adjustments import get_seasons
+from explore.calendar_extensions import get_seasons
 from quick_icalendar_import import import_calendar
 
 VESAK_DAY = "Visākha Pūjā"

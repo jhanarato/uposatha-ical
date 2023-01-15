@@ -1,7 +1,8 @@
+import datetime
 import icalendar
 import pytest
 
-from adjustments import get_seasons
+from explore.calendar_extensions import get_seasons
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
 
