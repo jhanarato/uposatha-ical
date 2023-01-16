@@ -325,6 +325,18 @@ class Season:
     def uposathas(self):
         return [event for event in self.events if event.moon_name in ["Full", "New"]]
 
+    @property
+    def half_moons(self):
+        return [event for event in self.events if event.moon_name in ["Waning", "Waxing"]]
+
+    @property
+    def start_year(self):
+        return self.events[0].date.year
+
+    @property
+    def end_year(self):
+        return self.events[-1].date.year
+
     def __str__(self):
         event_count = len(self.events)
         return "Season: {}, {} uposathas, {} events".format(self.season_name, self.uposatha_count, event_count)
