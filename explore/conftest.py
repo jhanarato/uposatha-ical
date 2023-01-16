@@ -2,7 +2,7 @@ import datetime
 import icalendar
 import pytest
 
-from explore.calendar_extensions import get_seasons
+from explore.calendar_extensions import get_seasons, add_date_before
 from forest_sangha_moons.MahanikayaCalendar import MahanikayaCalendar
 
 
@@ -31,9 +31,19 @@ def seasons_list(imported_calendar):
     return get_seasons(imported_calendar)
 
 @pytest.fixture
+def seasons_including_date_before(seasons_list):
+    add_date_before(seasons_list, datetime.date(2010, 2, 28))
+    return seasons_list
+
+@pytest.fixture
 def extra_month_years():
     return [2010, 2012, 2015, 2018, 2021, 2023, 2026, 2029]
 
 @pytest.fixture
 def extra_day_years():
     return [2016, 2020, 2025, 2030]
+
+@pytest.fixture
+def normal_years(extra_month_years, extra_day_years):
+    abnormal_years = extra_month_years + extra_day_years
+    return [year for year in range(2010, 2031) if year not in abnormal_years]
