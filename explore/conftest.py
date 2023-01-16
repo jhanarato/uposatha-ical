@@ -29,3 +29,11 @@ def imported_calendar(parsed_ical):
 @pytest.fixture
 def seasons_list(imported_calendar):
     return get_seasons(imported_calendar)
+
+@pytest.fixture
+def extra_month_years():
+    return [2010, 2012, 2015, 2018, 2021, 2023, 2026, 2029]
+
+@pytest.fixture
+def extra_day_years():
+    return [2016, 2020, 2025, 2030]
