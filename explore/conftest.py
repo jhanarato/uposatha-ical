@@ -47,3 +47,24 @@ def extra_day_years():
 def normal_years(extra_month_years, extra_day_years):
     abnormal_years = extra_month_years + extra_day_years
     return [year for year in range(2010, 2031) if year not in abnormal_years]
+
+@pytest.fixture
+def cold_seasons(seasons_including_date_before):
+    return [season for season in seasons_including_date_before if season.season_name == "Hemanta"]
+
+@pytest.fixture
+def rainy_seasons(seasons_including_date_before):
+    return [season for season in seasons_including_date_before if season.season_name == "Vassāna"]
+
+@pytest.fixture
+def hot_seasons(seasons_including_date_before):
+    return [season for season in seasons_including_date_before if season.season_name == "Gimha"]
+
+@pytest.fixture
+def extra_month_seasons(hot_seasons, extra_month_years):
+    return [season for season in hot_seasons if season.end_year in extra_month_years]
+
+@pytest.fixture
+def extra_day_seasons(hot_seasons, extra_day_years):
+    return [season for season in hot_seasons if season.end_year in extra_day_years]
+

@@ -14,3 +14,4 @@ def start_date(calendar):
 
 def get_seasons(calendar):
     return calendar.seasons[1:-1]
+
