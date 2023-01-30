@@ -78,3 +78,5 @@ def show_dates(holiday_name):
 if __name__ == "__main__":
     show_dates(VESAK_DAY)
     show_dates(MAGHA_PUJA)
+    show_dates(PAVARANA_DAY)
+    show_dates(ASALHA_PUJA)
